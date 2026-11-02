@@ -1,0 +1,173 @@
+{
+  "scale": {
+    "documents": 400,
+    "claims_per_doc": 3,
+    "observations_per_doc": 2,
+    "conflicts": 600,
+    "evidence": 1800,
+    "hypotheses": 1200,
+    "conclusions": 600,
+    "human_reviews": 200,
+    "events": 20000,
+    "audit_events": 20000,
+    "relations": 5000,
+    "activities": 500,
+    "scope_documents": 10,
+    "scope_conflicts": 20,
+    "upload_bytes": 26214400
+  },
+  "workloads": {
+    "GET /api/blackboard/events": {
+      "queries": 2,
+      "ms": 198.01,
+      "peak_kb": 1945.7,
+      "result": {
+        "status": 200,
+        "total": 20000
+      }
+    },
+    "GET /api/audit": {
+      "queries": 2,
+      "ms": 36.41,
+      "peak_kb": 427.6,
+      "result": {
+        "status": 200,
+        "total": 20000
+      }
+    },
+    "GET /api/claims": {
+      "queries": 3,
+      "ms": 17.76,
+      "peak_kb": 360.7,
+      "result": {
+        "status": 200,
+        "total": 1200
+      }
+    },
+    "GET /api/documents": {
+      "queries": 6,
+      "ms": 27.51,
+      "peak_kb": 462.8,
+      "result": {
+        "status": 200,
+        "total": 400
+      }
+    },
+    "GET /api/conflicts": {
+      "queries": 6,
+      "ms": 24.62,
+      "peak_kb": 398.8,
+      "result": {
+        "status": 200,
+        "total": 600
+      }
+    },
+    "GET /api/evidence": {
+      "queries": 3,
+      "ms": 19.06,
+      "peak_kb": 337.4,
+      "result": {
+        "status": 200,
+        "total": 1800
+      }
+    },
+    "GET /api/hypotheses": {
+      "queries": 2,
+      "ms": 16.23,
+      "peak_kb": 314.3,
+      "result": {
+        "status": 200,
+        "total": 1200
+      }
+    },
+    "GET /api/investigations": {
+      "queries": 6,
+      "ms": 24.06,
+      "peak_kb": 475.4,
+      "result": {
+        "status": 200,
+        "total": 50
+      }
+    },
+    "kg.build_knowledge_graph(scoped)": {
+      "queries": 10,
+      "ms": 81.02,
+      "peak_kb": 4392.2,
+      "result": {
+        "nodes": 776,
+        "edges": 340
+      }
+    },
+    "kg.build_knowledge_graph(global)": {
+      "queries": 10,
+      "ms": 1053.47,
+      "peak_kb": 65533.5,
+      "result": {
+        "nodes": 800,
+        "edges": 598
+      }
+    },
+    "relation_service.sync_relations(scoped)": {
+      "queries": 209,
+      "ms": 101.16,
+      "peak_kb": 3218.3,
+      "result": {
+        "created": 200
+      }
+    },
+    "document_service.document_llm_attempted": {
+      "queries": 1,
+      "ms": 2.53,
+      "peak_kb": 26.8,
+      "result": {
+        "attempted": true
+      }
+    },
+    "blackboard.build_graph(global)": {
+      "queries": 6,
+      "ms": 443.31,
+      "peak_kb": 15124.2,
+      "result": {
+        "nodes": 5800,
+        "edges": 6000
+      }
+    },
+    "blackboard.state.assess(scoped)": {
+      "queries": 6,
+      "ms": 24.99,
+      "peak_kb": 1317.6,
+      "result": {
+        "documents_total": 10,
+        "documents_awaiting_extraction": 0,
+        "claims_total": 30,
+        "conflicts_total": 20,
+        "unresolved_conflicts": 15,
+        "hypotheses_total": 40,
+        "hypotheses_proposed": 14,
+        "evidence_total": 60,
+        "evidence_unverified": 14,
+        "evidence_missing": 22,
+        "ready_for_decision": 0,
+        "missing_information_flags": 0
+      }
+    },
+    "document_service.document_stats(single)": {
+      "queries": 3,
+      "ms": 5.35,
+      "peak_kb": 75.3,
+      "result": {
+        "claim_count": 3,
+        "observation_count": 2,
+        "conflict_count": 2
+      }
+    },
+    "document_service.save_upload(memory)": {
+      "queries": 0,
+      "ms": 30.95,
+      "peak_kb": 2058.5,
+      "result": {
+        "bytes": 26214400
+      }
+    }
+  }
+}

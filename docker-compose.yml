@@ -1,0 +1,37 @@
+# Local development stack (do not use for public hosting; see
+# docker-compose.prod.yml and docs/deployment.md for production).
+services:
+  backend:
+    build: ./backend
+    container_name: neurosync-backend
+    environment:
+      # Bind all interfaces *inside the container's network namespace* so the
+      # published port and the frontend proxy can reach it. This does not by
+      # itself expose the API to the internet.
+      APP_HOST: 0.0.0.0
+      FORWARDED_ALLOW_IPS: "*"
+      DATABASE_URL: sqlite:////app/data/neurosync.db
+      UPLOAD_DIR: /app/data/uploads
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      MAX_UPLOAD_MB: "25"
+      LOG_LEVEL: INFO
+    volumes:
+      # One volume holds both the database and the uploads.
+      - neurosync-data:/app/data
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: neurosync-frontend
+    depends_on:
+      - backend
+    environment:
+      # Rendered into nginx.conf at startup by the nginx image entrypoint.
+      BACKEND_ORIGIN: http://backend:8000
+      API_TOKEN: ""
+    ports:
+      - "5173:80"
+
+volumes:
+  neurosync-data:

@@ -1,0 +1,49 @@
+# Caddy reverse proxy with automatic HTTPS.
+#
+# The site address comes from the SITE_ADDRESS environment variable
+# (docker compose -> Caddy). Examples:
+#   SITE_ADDRESS=neurosync.example.com   -> automatic Let's Encrypt certificate
+#   SITE_ADDRESS=localhost               -> local-only cert (internal CA)
+#
+# Caddy terminates TLS and forwards everything to the frontend container, which
+# serves the SPA and proxies /api to the backend on the private network.
+
+# Optional: receive Let's Encrypt expiry notices. Uncomment, set ACME_EMAIL in
+# ".env", and restart Caddy. (Left commented because an empty "email" value is a
+# Caddy configuration error.)
+# {
+# 	email {$ACME_EMAIL}
+# }
+
+{$SITE_ADDRESS} {
+	encode gzip
+
+	# --- Optional: restrict who can reach the app -------------------------
+	# Uncomment and generate a hash with:
+	#   docker run --rm caddy:2.8-alpine caddy hash-password --plaintext 'YOUR_PASSWORD'
+	# basic_auth {
+	#     admin $2a$14$REPLACE_WITH_BCRYPT_HASH
+	# }
+
+	# --- Optional: IP allowlist -------------------------------------------
+	# @allowed remote_ip 203.0.113.0/24
+	# handle @allowed {
+	#     reverse_proxy frontend:80
+	# }
+	# respond 403
+
+	reverse_proxy frontend:80
+
+	# Security headers for the HTML app. (The API also sets these itself.)
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy no-referrer
+		-Server
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

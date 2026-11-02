@@ -1,0 +1,159 @@
+{
+  "dataset": {
+    "name": "neurosync-evidence-sufficiency-eval",
+    "version": "1.0.0",
+    "num_scenarios": 6
+  },
+  "accuracy": {
+    "total": 6,
+    "correct": 6,
+    "accuracy": 1.0,
+    "per_class": {
+      "contradicted": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "inconclusive": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "review_required": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "supported": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      }
+    }
+  },
+  "partition_traceability_rate": 1.0,
+  "scenarios": [
+    {
+      "id": "no_evidence",
+      "category": "insufficient_evidence",
+      "description": "A hypothesis with no supporting or contradicting evidence at all.",
+      "expected_status": "inconclusive",
+      "predicted_status": "inconclusive",
+      "correct": true,
+      "support_score": 0.5,
+      "confidence": 0.4,
+      "distinct_sources": 0,
+      "supporting_count": 0,
+      "contradicting_count": 0,
+      "supporting_weight": 0.0,
+      "contradicting_weight": 0.0,
+      "has_direct_evidence": false,
+      "partition_correct": true,
+      "scoring_explanation": "0 supporting item(s) and 0 contradicting item(s) across 0 distinct source(s). Composite support=0.50, status=inconclusive. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "With no evidence the system must not claim any support; insufficient evidence cannot yield a supported conclusion."
+    },
+    {
+      "id": "single_source_direct_support",
+      "category": "evidence_sufficiency",
+      "description": "Three direct measurement items, all from one document.",
+      "expected_status": "review_required",
+      "predicted_status": "review_required",
+      "correct": true,
+      "support_score": 0.821,
+      "confidence": 0.757,
+      "distinct_sources": 1,
+      "supporting_count": 3,
+      "contradicting_count": 0,
+      "supporting_weight": 1.7875,
+      "contradicting_weight": 0.0,
+      "has_direct_evidence": true,
+      "partition_correct": true,
+      "scoring_explanation": "3 supporting item(s) and 0 contradicting item(s) across 1 distinct source(s). Composite support=0.82, status=review_required. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "Repeated claims from the same source are not independent corroboration, so a single-source hypothesis must be flagged for review instead of 'supported'."
+    },
+    {
+      "id": "multi_source_direct_support",
+      "category": "evidence_sufficiency",
+      "description": "Direct high-reliability items from three distinct documents.",
+      "expected_status": "supported",
+      "predicted_status": "supported",
+      "correct": true,
+      "support_score": 0.863,
+      "confidence": 0.95,
+      "distinct_sources": 3,
+      "supporting_count": 3,
+      "contradicting_count": 0,
+      "supporting_weight": 2.6475,
+      "contradicting_weight": 0.0,
+      "has_direct_evidence": true,
+      "partition_correct": true,
+      "scoring_explanation": "3 supporting item(s) and 0 contradicting item(s) across 3 distinct source(s). Composite support=0.86, status=supported. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "Independent direct corroboration from multiple sources is the intended basis for a supported hypothesis."
+    },
+    {
+      "id": "contradicting_outweighs",
+      "category": "evidence_sufficiency",
+      "description": "One weak supporting item against two strong contradicting items.",
+      "expected_status": "contradicted",
+      "predicted_status": "contradicted",
+      "correct": true,
+      "support_score": 0.261,
+      "confidence": 0.309,
+      "distinct_sources": 1,
+      "supporting_count": 1,
+      "contradicting_count": 2,
+      "supporting_weight": 0.405,
+      "contradicting_weight": 1.765,
+      "has_direct_evidence": false,
+      "partition_correct": true,
+      "scoring_explanation": "1 supporting item(s) and 2 contradicting item(s) across 1 distinct source(s). Composite support=0.26, status=contradicted. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "When contradicting evidence clearly outweighs support, the hypothesis should be marked contradicted rather than supported."
+    },
+    {
+      "id": "balanced_support_and_contradiction",
+      "category": "evidence_sufficiency",
+      "description": "Equal-weight supporting and contradicting evidence.",
+      "expected_status": "inconclusive",
+      "predicted_status": "inconclusive",
+      "correct": true,
+      "support_score": 0.556,
+      "confidence": 0.545,
+      "distinct_sources": 1,
+      "supporting_count": 1,
+      "contradicting_count": 1,
+      "supporting_weight": 0.5,
+      "contradicting_weight": 0.5,
+      "has_direct_evidence": false,
+      "partition_correct": true,
+      "scoring_explanation": "1 supporting item(s) and 1 contradicting item(s) across 1 distinct source(s). Composite support=0.56, status=inconclusive. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "Balanced conflicting evidence must remain inconclusive; the system should not force a conclusion."
+    },
+    {
+      "id": "unreliable_support_outweighed",
+      "category": "source_reliability",
+      "description": "A single low-reliability, low-relevance supporting item against two strong contradicting items.",
+      "expected_status": "contradicted",
+      "predicted_status": "contradicted",
+      "correct": true,
+      "support_score": 0.241,
+      "confidence": 0.293,
+      "distinct_sources": 1,
+      "supporting_count": 1,
+      "contradicting_count": 2,
+      "supporting_weight": 0.2725,
+      "contradicting_weight": 1.8,
+      "has_direct_evidence": false,
+      "partition_correct": true,
+      "scoring_explanation": "1 supporting item(s) and 2 contradicting item(s) across 1 distinct source(s). Composite support=0.24, status=contradicted. Scores are bounded support indicators, not calibrated probabilities.",
+      "rationale": "Unreliable, low-relevance support should not survive strong contradicting evidence; the hypothesis is contradicted."
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "investigation_id": 1,
+  "conclusions_total": 7,
+  "fully_traceable": 7,
+  "traceability_rate": 1.0,
+  "conclusions_linked_to_conflict": 7,
+  "conclusions_linked_to_claims": 7,
+  "decisions": [
+    "human_review_required",
+    "inconclusive",
+    "supported_conclusion"
+  ],
+  "conclusions": [
+    {
+      "conclusion_id": 1,
+      "conflict_id": 1,
+      "decision_type": "inconclusive",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 2,
+      "conflict_id": 2,
+      "decision_type": "human_review_required",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        1,
+        2,
+        3
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 3,
+      "conflict_id": 3,
+      "decision_type": "supported_conclusion",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        4,
+        5,
+        6
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": true,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 4,
+      "conflict_id": 4,
+      "decision_type": "inconclusive",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        7
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 5,
+      "conflict_id": 5,
+      "decision_type": "inconclusive",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        10
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 6,
+      "conflict_id": 6,
+      "decision_type": "inconclusive",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        12
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    },
+    {
+      "conclusion_id": 7,
+      "conflict_id": 7,
+      "decision_type": "human_review_required",
+      "conflict_linked": true,
+      "claims_traceable": true,
+      "supporting_evidence_ids": [
+        23
+      ],
+      "support_ids_exist": true,
+      "support_ids_belong_to_conflict": true,
+      "requires_explicit_support": false,
+      "support_sufficient": true,
+      "fully_traceable": true,
+      "references_conflict_claims": true
+    }
+  ]
+}

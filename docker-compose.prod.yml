@@ -1,0 +1,87 @@
+# Production stack for a single Linux host (VPS).
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Topology:
+#   Internet --(80/443, TLS)--> Caddy --> frontend (nginx: SPA + /api proxy)
+#   --> backend (FastAPI, single worker, internal network only)
+#
+# The backend publishes NO host port: it is reachable only from the frontend
+# container on the private network. Set the required values in a ".env" file
+# next to this file (see .env.prod.example) before bringing it up.
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      ENVIRONMENT: production
+      # Absolute paths on the persistent volume; the container runs as a
+      # non-root user that owns /app/data.
+      DATABASE_URL: sqlite:////app/data/neurosync.db
+      UPLOAD_DIR: /app/data/uploads
+      APP_HOST: 0.0.0.0
+      APP_WORKERS: "1"            # keep at 1; see docs/deployment.md
+      FORWARDED_ALLOW_IPS: "*"    # safe only because the port is not published
+      # --- required (compose will refuse to start if unset) ---
+      CORS_ORIGINS: ${CORS_ORIGINS:?set CORS_ORIGINS in .env}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:?set TRUSTED_HOSTS in .env}
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
+      # --- optional ---
+      ENABLE_DOCS: "false"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      LOG_FORMAT: ${LOG_FORMAT:-json}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-25}
+      MAX_EXTRACTED_CHARS: ${MAX_EXTRACTED_CHARS:-5000000}
+      ENABLE_LLM: ${ENABLE_LLM:-false}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+    volumes:
+      - neurosync-prod-data:/app/data
+    networks:
+      - internal
+    # No "ports:" on purpose - the API is not reachable from the host.
+
+  frontend:
+    build:
+      context: ./frontend
+      # Set VITE_API_URL only if the API is served from a DIFFERENT origin.
+      # Leave empty for the default same-origin "/api" behaviour.
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      BACKEND_ORIGIN: http://backend:8000
+      # Injected server-side by nginx so the token never reaches the browser.
+      API_TOKEN: ${API_TOKEN:?set API_TOKEN in .env}
+    networks:
+      - internal
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?set SITE_ADDRESS in .env}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - internal
+
+volumes:
+  neurosync-prod-data:
+  caddy-data:
+  caddy-config:
+
+networks:
+  internal:

@@ -1,0 +1,153 @@
+@import "tailwindcss";
+
+/* NeuroSync design system. Deep "blackboard" navy palette with an indigo/violet
+   accent, semantic severity colours, and soft glassy surfaces. */
+@theme {
+  --color-bg: #080c18;
+  --color-bg-soft: #0b1122;
+  --color-surface: #0f172e;
+  --color-surface-2: #141d38;
+  --color-border: #202c4d;
+  --color-border-soft: #1a2440;
+
+  --color-ink: #eef2ff;
+  --color-muted: #9aa7c7;
+  --color-faint: #64719a;
+
+  --color-primary: #6366f1;
+  --color-primary-soft: #818cf8;
+  --color-accent: #22d3ee;
+  --color-violet: #a855f7;
+
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+  --color-critical: #ef4444;
+  --color-info: #60a5fa;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --radius-xl: 1rem;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border-soft);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(99, 102, 241, 0.14), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(34, 211, 238, 0.08), transparent 55%),
+      var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2c3a63;
+  }
+}
+
+@layer components {
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgba(20, 29, 56, 0.72),
+      rgba(15, 23, 46, 0.72)
+    );
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--color-border-soft);
+  }
+
+  .card {
+    border-radius: 1rem;
+    background: linear-gradient(
+      180deg,
+      rgba(20, 29, 56, 0.6),
+      rgba(15, 23, 46, 0.66)
+    );
+    border: 1px solid var(--color-border-soft);
+  }
+
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--color-primary-soft);
+    outline-offset: 2px;
+  }
+
+  .input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .input::placeholder {
+    color: var(--color-faint);
+  }
+  .input:focus {
+    border-color: var(--color-primary-soft);
+  }
+}
+
+@keyframes ns-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animate-ns-pulse {
+  animation: ns-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes ns-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-ns-fade {
+  animation: ns-fade-in 0.28s ease-out both;
+}
+
+/* React Flow theming */
+.react-flow__attribution {
+  display: none;
+}
+.react-flow__edge-path {
+  stroke-width: 2;
+}

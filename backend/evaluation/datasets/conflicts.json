@@ -1,0 +1,370 @@
+{
+  "name": "neurosync-contradiction-eval",
+  "version": "1.0.0",
+  "created": "2026-10-11",
+  "description": "Curated, human-authored labeled examples for measuring NeuroSync's rule-based contradiction detection. Every example is a pair of short source texts that are fed through the real claim-extraction and conflict-detection code paths. Labels are ground truth authored independently of the detector's output.",
+  "positive_class": "confirmed_contradiction",
+  "confirmed_contradiction_types": [
+    "numerical_disagreement",
+    "direct_contradiction",
+    "semantic_inconsistency"
+  ],
+  "flag_types": [
+    "numerical_disagreement",
+    "direct_contradiction",
+    "semantic_inconsistency",
+    "temporal_inconsistency",
+    "missing_context"
+  ],
+  "label_definition": {
+    "label_true": "The two sources make incompatible assertions about the same subject and property (same property, contemporaneous or no legitimate differentiator), so they cannot both be accurate. This is the positive class.",
+    "label_false": "The two sources are compatible, equivalent after unit normalisation, refer to different times (so a difference may be a genuine change), lack the context to compare, or carry insufficient information to contradict. This is the negative class.",
+    "expected_flagged": "Whether the detector is expected to surface *any* conflict (including the softer temporal_inconsistency and missing_context signals that are not themselves confirmed contradictions).",
+    "expected_types": "The conflict_type value(s) the detector should assign. Any one of these counts as a correct classification for reporting."
+  },
+  "categories": [
+    "different_measurement_units",
+    "different_timestamps",
+    "missing_context",
+    "conflicting_documents",
+    "unreliable_sources",
+    "insufficient_evidence",
+    "equivalent_statements",
+    "lexical_variation_and_negation"
+  ],
+  "notes": [
+    "Texts use a fixed neutral date/time format (e.g. '10:00 AM') that the deterministic extractor parses without a calendar date.",
+    "Source reliability is recorded in 'source_a_reliability'/'source_b_reliability' for documentation only; the pairwise detector deliberately ignores reliability (it is applied later, in evidence scoring).",
+    "These are synthetic, clearly-labelled evaluation fixtures and are never loaded into a production database."
+  ],
+  "examples": [
+    {
+      "id": "units_temp_f_vs_c_incompatible",
+      "category": "different_measurement_units",
+      "text_a": "The temperature was 100°F at 10:00 AM.",
+      "text_b": "The temperature was 40°C at 10:00 AM.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "100°F is 37.8°C, which differs from 40°C by more than the 2% tolerance, so these are incompatible temperature readings of the same subject at the same time."
+    },
+    {
+      "id": "units_temp_c_vs_f_incompatible",
+      "category": "different_measurement_units",
+      "text_a": "The temperature was 30°C at 10:00 AM.",
+      "text_b": "The temperature was 104°F at 10:00 AM.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "104°F is 40°C, which contradicts 30°C for the same subject at the same time after unit conversion."
+    },
+    {
+      "id": "units_temp_equivalent",
+      "category": "different_measurement_units",
+      "text_a": "The temperature was 100°F at 10:00 AM.",
+      "text_b": "The temperature was 37.8°C at 10:00 AM.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "100°F equals 37.8°C within rounding; the readings agree once units are normalised, so this is not a contradiction."
+    },
+    {
+      "id": "units_pressure_kpa_vs_bar",
+      "category": "different_measurement_units",
+      "text_a": "The pressure reading was 5 kPa at 10:00 AM.",
+      "text_b": "The pressure reading was 5 bar at 10:00 AM.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["missing_context"],
+      "rationale": "kPa and bar are related but the detector only converts temperature; it cannot confirm a value clash, so it correctly flags missing unit context rather than asserting a contradiction."
+    },
+    {
+      "id": "units_flow_lmin_vs_kg",
+      "category": "different_measurement_units",
+      "text_a": "The flow was 5 L/min at 10:00 AM.",
+      "text_b": "The flow was 5 kg at 10:00 AM.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["missing_context"],
+      "rationale": "L/min (volume flow) and kg (mass) are different physical dimensions and are not convertible, so the values cannot be compared without context."
+    },
+    {
+      "id": "time_gap_90min_different_values",
+      "category": "different_timestamps",
+      "text_a": "Machine M-17 temperature was 92°C at 10:00 AM.",
+      "text_b": "Machine M-17 temperature was 76°C at 11:30 AM.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["temporal_inconsistency"],
+      "rationale": "Readings 90 minutes apart exceeding the 30-minute gap threshold may reflect a genuine change over time, so this is surfaced for investigation but is not a confirmed contemporaneous contradiction."
+    },
+    {
+      "id": "time_gap_180min_vibration",
+      "category": "different_timestamps",
+      "text_a": "The vibration was 5 mm/s at 09:00.",
+      "text_b": "The vibration was 9 mm/s at 12:00.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["temporal_inconsistency"],
+      "rationale": "Three hours apart and above the gap threshold; the difference may be a genuine trend rather than a contradiction."
+    },
+    {
+      "id": "time_gap_same_value",
+      "category": "different_timestamps",
+      "text_a": "The temperature was 65°C at 09:00.",
+      "text_b": "The temperature was 65°C at 11:00.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "The values agree, so there is nothing to flag regardless of the time gap."
+    },
+    {
+      "id": "time_close_gap_contradiction",
+      "category": "different_timestamps",
+      "text_a": "The temperature was 50°C at 10:00.",
+      "text_b": "The temperature was 90°C at 10:20.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "A 20-minute gap is below the 30-minute threshold, so the large difference is treated as a contemporaneous contradiction rather than a possible trend."
+    },
+    {
+      "id": "time_under_threshold_same_value",
+      "category": "different_timestamps",
+      "text_a": "The temperature was 40°C at 10:00.",
+      "text_b": "The temperature was 40°C at 10:15.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Same value and within the gap threshold; nothing to flag."
+    },
+    {
+      "id": "missing_context_one_timestamp",
+      "category": "missing_context",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The temperature was 76°C.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["missing_context"],
+      "rationale": "Only one report records a time, so it is unclear whether the differing readings are contemporaneous; the detector flags missing time context rather than asserting a contradiction."
+    },
+    {
+      "id": "missing_context_both_no_timestamp",
+      "category": "missing_context",
+      "text_a": "The temperature was 92°C.",
+      "text_b": "The temperature was 40°C.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "Neither report records a time, so there is no temporal differentiator and the large difference is a contemporaneous disagreement (a contradiction)."
+    },
+    {
+      "id": "missing_context_dimension_mismatch",
+      "category": "missing_context",
+      "text_a": "The vibration was 5 mm/s at 10:00 AM.",
+      "text_b": "The vibration was 5 mm at 10:00 AM.",
+      "label": false,
+      "expected_flagged": true,
+      "expected_types": ["missing_context"],
+      "rationale": "mm/s (velocity) and mm (displacement) are different dimensions; comparison needs context."
+    },
+    {
+      "id": "doc_numeric_same_time",
+      "category": "conflicting_documents",
+      "text_a": "Machine M-17 reached a temperature of 92°C during inspection at 10:00 AM.",
+      "text_b": "Machine M-17 reached a temperature of 76°C during inspection at 10:00 AM.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "Two documents report different temperatures for the same machine at the same time; a direct contradiction."
+    },
+    {
+      "id": "doc_numeric_large_difference",
+      "category": "conflicting_documents",
+      "text_a": "The temperature was 20°C at 10:00 AM.",
+      "text_b": "The temperature was 95°C at 10:00 AM.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "A very large contemporaneous difference (>25%) between two documents; a clear contradiction."
+    },
+    {
+      "id": "doc_state_direct_contradiction",
+      "category": "conflicting_documents",
+      "text_a": "The machine was observed operating normally.",
+      "text_b": "The machine was observed not operating normally.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["direct_contradiction"],
+      "rationale": "One report affirms and the other negates the same observed state; directly opposed assertions."
+    },
+    {
+      "id": "doc_state_semantic_inconsistency",
+      "category": "conflicting_documents",
+      "text_a": "The machine status was normal.",
+      "text_b": "The machine status was abnormal.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["semantic_inconsistency"],
+      "rationale": "Both reports assert a status for the same subject but disagree on the value; a semantic inconsistency."
+    },
+    {
+      "id": "unreliable_source_outlier",
+      "category": "unreliable_sources",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The temperature was 40°C at 10:00 AM.",
+      "source_a_reliability": "high",
+      "source_b_reliability": "low",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "A low-reliability source reporting an outlier still contradicts the reliable reading; the detector should flag it and let evidence scoring down-weight the unreliable source."
+    },
+    {
+      "id": "unreliable_sources_disagree",
+      "category": "unreliable_sources",
+      "text_a": "The temperature was 70°C at 10:00 AM.",
+      "text_b": "The temperature was 45°C at 10:00 AM.",
+      "source_a_reliability": "low",
+      "source_b_reliability": "low",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "Two low-reliability sources still contradict each other; detection is independent of reliability, which is applied downstream."
+    },
+    {
+      "id": "unreliable_source_agrees",
+      "category": "unreliable_sources",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The temperature was 92°C at 10:00 AM.",
+      "source_a_reliability": "high",
+      "source_b_reliability": "low",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "The low-reliability source agrees with the reliable one, so there is no contradiction to flag."
+    },
+    {
+      "id": "unreliable_sources_both_agree",
+      "category": "unreliable_sources",
+      "text_a": "The temperature was 55°C at 10:00 AM.",
+      "text_b": "The temperature was 55°C at 10:00 AM.",
+      "source_a_reliability": "low",
+      "source_b_reliability": "low",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Consistent values, no contradiction."
+    },
+    {
+      "id": "insufficient_one_source_no_claim",
+      "category": "insufficient_evidence",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The maintenance team met on Tuesday to discuss the schedule.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "The second text contains no structured claim, so there is insufficient information to establish a contradiction."
+    },
+    {
+      "id": "insufficient_both_vague",
+      "category": "insufficient_evidence",
+      "text_a": "Conditions were normal.",
+      "text_b": "Operations continued as planned.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Neither text yields a comparable subject/property claim; nothing can be contradicted."
+    },
+    {
+      "id": "insufficient_single_source",
+      "category": "insufficient_evidence",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Only one source provides evidence; a single observation cannot contradict itself."
+    },
+    {
+      "id": "insufficient_unrelated_subjects",
+      "category": "insufficient_evidence",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The pressure was 5 kPa at 10:00 AM.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Different properties of different quantities are different facts, not a contradiction."
+    },
+    {
+      "id": "equiv_reworded",
+      "category": "equivalent_statements",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "A temperature of 92°C was recorded at 10:00 AM.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "The same fact expressed in different words; equivalent, not contradictory."
+    },
+    {
+      "id": "equiv_reordered",
+      "category": "equivalent_statements",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "At 10:00 AM the temperature reading was 92°C.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Reordered clause, identical meaning; equivalent."
+    },
+    {
+      "id": "equiv_unit_equivalent",
+      "category": "equivalent_statements",
+      "text_a": "The temperature was 100°F at 10:00 AM.",
+      "text_b": "The temperature was 37.8°C at 10:00 AM.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Equivalent statements that use different units; must not be reported as a contradiction."
+    },
+    {
+      "id": "equiv_within_tolerance",
+      "category": "equivalent_statements",
+      "text_a": "The temperature was 65°C at 10:00 AM.",
+      "text_b": "The temperature was 65.5°C at 10:00 AM.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "A 0.8% difference is within the 2% tolerance and is treated as measurement agreement, not a contradiction."
+    },
+    {
+      "id": "lex_subject_synonym_temp",
+      "category": "lexical_variation_and_negation",
+      "text_a": "The temperature was 92°C at 10:00 AM.",
+      "text_b": "The temp was 40°C at 10:00 AM.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["numerical_disagreement"],
+      "rationale": "Hard case: 'temp' and 'temperature' denote the same property, so the same-time readings genuinely contradict. The rule-based extractor maps them to different subjects and is expected to miss this (false negative)."
+    },
+    {
+      "id": "lex_state_synonym_running",
+      "category": "lexical_variation_and_negation",
+      "text_a": "The machine was operating normally.",
+      "text_b": "The machine was not running.",
+      "label": true,
+      "expected_flagged": true,
+      "expected_types": ["direct_contradiction"],
+      "rationale": "Hard case: 'not running' opposes 'operating normally'. 'running' is not in the state/status vocabulary, so the second statement is expected to yield no claim and be missed (false negative)."
+    },
+    {
+      "id": "lex_negation_scope_false_positive",
+      "category": "lexical_variation_and_negation",
+      "text_a": "The machine was operating normally, with no anomalies.",
+      "text_b": "The machine was operating normally.",
+      "label": false,
+      "expected_flagged": false,
+      "expected_types": [],
+      "rationale": "Hard case: both statements say the machine is normal, so there is no contradiction. The word 'no' is a negation marker, so the detector is expected to flip the first statement's polarity and raise a spurious direct_contradiction (false positive)."
+    }
+  ]
+}

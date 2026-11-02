@@ -1,0 +1,4 @@
+# NeuroSync test dependencies (not installed in the runtime image)
+pytest==9.0.3
+pip-audit
+bandit

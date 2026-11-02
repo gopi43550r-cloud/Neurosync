@@ -1,0 +1,43 @@
+# NeuroSync frontend nginx configuration (rendered at container start).
+#
+# This file is processed by the official nginx image entrypoint, which runs
+# envsubst over files in /etc/nginx/templates/*.template using the container's
+# environment variables. Only defined environment variables are substituted, so
+# nginx variables such as $uri, $host and $remote_addr are left intact.
+#
+# Substituted variables:
+#   ${BACKEND_ORIGIN} - internal base URL of the API (e.g. http://backend:8000)
+#   ${API_TOKEN}      - optional bearer token injected server-side on /api calls
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Allow uploads up to MAX_UPLOAD_MB (nginx defaults to 1m, which would
+    # reject larger documents before they reach the API).
+    client_max_body_size 30m;
+
+    # SPA fallback.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy API calls (including the SSE event stream) to the backend.
+    location /api/ {
+        proxy_pass ${BACKEND_ORIGIN}/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Connection "";
+        # Inject the API bearer token server-side so it is never exposed in the
+        # browser bundle. Harmless when the backend has no API_TOKEN set.
+        proxy_set_header Authorization "Bearer ${API_TOKEN}";
+        # Required for server-sent events: no buffering, long read timeout.
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 3600s;
+    }
+}

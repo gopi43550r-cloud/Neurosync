@@ -1,0 +1,1552 @@
+{
+  "generated_at": "2026-10-10T23:36:41.985518+00:00",
+  "deterministic_mode": true,
+  "llm_enabled": false,
+  "dataset_hashes": {
+    "conflicts.json": "17aa137d72180bde40e6b5774979123456138f801ec924ec8ac51978b4bfc37b",
+    "evidence_sufficiency.json": "769a04c0f0048962cebe52d870ca78cd6ba9693a717d5249b01141a7476e3936"
+  },
+  "conflict_detection": {
+    "dataset": {
+      "name": "neurosync-contradiction-eval",
+      "version": "1.0.0",
+      "positive_class": "confirmed_contradiction",
+      "confirmed_contradiction_types": [
+        "direct_contradiction",
+        "numerical_disagreement",
+        "semantic_inconsistency"
+      ],
+      "num_examples": 32
+    },
+    "overall": {
+      "counts": {
+        "tp": 10,
+        "fp": 1,
+        "fn": 2,
+        "tn": 19
+      },
+      "support": 32,
+      "positives": 12,
+      "negatives": 20,
+      "precision": 0.9091,
+      "recall": 0.8333,
+      "f1": 0.8696,
+      "false_positive_rate": 0.05,
+      "false_negative_rate": 0.1667,
+      "accuracy": 0.9062
+    },
+    "by_category": {
+      "conflicting_documents": {
+        "counts": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0
+        },
+        "support": 4,
+        "positives": 4,
+        "negatives": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": null,
+        "false_negative_rate": 0.0,
+        "accuracy": 1.0
+      },
+      "different_measurement_units": {
+        "counts": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 3
+        },
+        "support": 5,
+        "positives": 2,
+        "negatives": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "accuracy": 1.0
+      },
+      "different_timestamps": {
+        "counts": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4
+        },
+        "support": 5,
+        "positives": 1,
+        "negatives": 4,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "accuracy": 1.0
+      },
+      "equivalent_statements": {
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4
+        },
+        "support": 4,
+        "positives": 0,
+        "negatives": 4,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": null,
+        "accuracy": 1.0
+      },
+      "insufficient_evidence": {
+        "counts": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4
+        },
+        "support": 4,
+        "positives": 0,
+        "negatives": 4,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": null,
+        "accuracy": 1.0
+      },
+      "lexical_variation_and_negation": {
+        "counts": {
+          "tp": 0,
+          "fp": 1,
+          "fn": 2,
+          "tn": 0
+        },
+        "support": 3,
+        "positives": 2,
+        "negatives": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "false_positive_rate": 1.0,
+        "false_negative_rate": 1.0,
+        "accuracy": 0.0
+      },
+      "missing_context": {
+        "counts": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2
+        },
+        "support": 3,
+        "positives": 1,
+        "negatives": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "accuracy": 1.0
+      },
+      "unreliable_sources": {
+        "counts": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2
+        },
+        "support": 4,
+        "positives": 2,
+        "negatives": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.0,
+        "accuracy": 1.0
+      }
+    },
+    "signals": {
+      "flag_accuracy": 0.9062,
+      "type_accuracy": 0.9062,
+      "extraction_coverage": 0.875
+    },
+    "failures": [
+      {
+        "id": "lex_subject_synonym_temp",
+        "category": "lexical_variation_and_negation",
+        "failure_kind": "false_negative",
+        "explanation": "false negative: a real contradiction was missed. Expected contradiction types ['numerical_disagreement'], detector returned ['no conflict']. Extraction produced claims_a=1, claims_b=1."
+      },
+      {
+        "id": "lex_state_synonym_running",
+        "category": "lexical_variation_and_negation",
+        "failure_kind": "false_negative",
+        "explanation": "false negative: a real contradiction was missed. Expected contradiction types ['direct_contradiction'], detector returned ['no conflict']. Extraction produced claims_a=1, claims_b=0."
+      },
+      {
+        "id": "lex_negation_scope_false_positive",
+        "category": "lexical_variation_and_negation",
+        "failure_kind": "false_positive",
+        "explanation": "false positive: a non-contradiction was reported as a contradiction. Expected contradiction types ['no conflict (expected)'], detector returned ['direct_contradiction']. Extraction produced claims_a=1, claims_b=1."
+      }
+    ],
+    "examples": [
+      {
+        "id": "units_temp_f_vs_c_incompatible",
+        "category": "different_measurement_units",
+        "text_a": "The temperature was 100°F at 10:00 AM.",
+        "text_b": "The temperature was 40°C at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "medium",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 100°F and 40°C within the same time period with no distinguishing context (6% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "100°F is 37.8°C, which differs from 40°C by more than the 2% tolerance, so these are incompatible temperature readings of the same subject at the same time."
+      },
+      {
+        "id": "units_temp_c_vs_f_incompatible",
+        "category": "different_measurement_units",
+        "text_a": "The temperature was 30°C at 10:00 AM.",
+        "text_b": "The temperature was 104°F at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "medium",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 30°C and 104°F within the same time period with no distinguishing context (25% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "104°F is 40°C, which contradicts 30°C for the same subject at the same time after unit conversion."
+      },
+      {
+        "id": "units_temp_equivalent",
+        "category": "different_measurement_units",
+        "text_a": "The temperature was 100°F at 10:00 AM.",
+        "text_b": "The temperature was 37.8°C at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "100°F equals 37.8°C within rounding; the readings agree once units are normalised, so this is not a contradiction."
+      },
+      {
+        "id": "units_pressure_kpa_vs_bar",
+        "category": "different_measurement_units",
+        "text_a": "The pressure reading was 5 kPa at 10:00 AM.",
+        "text_b": "The pressure reading was 5 bar at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "missing_context"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "missing_context"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "missing_context",
+              "severity": "low",
+              "confidence": 0.45,
+              "description": "Measurements of 'pressure' use different or missing units (kPa vs bar); they cannot be directly compared without unit context.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "kPa and bar are related but the detector only converts temperature; it cannot confirm a value clash, so it correctly flags missing unit context rather than asserting a contradiction."
+      },
+      {
+        "id": "units_flow_lmin_vs_kg",
+        "category": "different_measurement_units",
+        "text_a": "The flow was 5 L/min at 10:00 AM.",
+        "text_b": "The flow was 5 kg at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "missing_context"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "missing_context"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "missing_context",
+              "severity": "low",
+              "confidence": 0.45,
+              "description": "Measurements of 'flow' use different or missing units (L/min vs kg); they cannot be directly compared without unit context.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "L/min (volume flow) and kg (mass) are different physical dimensions and are not convertible, so the values cannot be compared without context."
+      },
+      {
+        "id": "time_gap_90min_different_values",
+        "category": "different_timestamps",
+        "text_a": "Machine M-17 temperature was 92°C at 10:00 AM.",
+        "text_b": "Machine M-17 temperature was 76°C at 11:30 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "temporal_inconsistency"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "temporal_inconsistency"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "temporal_inconsistency",
+              "severity": "medium",
+              "confidence": 0.6,
+              "description": "'temperature' is 92°C in one report and 76°C in another, measured about 90 minutes apart. These may reflect a genuine change over time rather than contradictory measurements, but the difference is large enough to warrant investigation.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Readings 90 minutes apart exceeding the 30-minute gap threshold may reflect a genuine change over time, so this is surfaced for investigation but is not a confirmed contemporaneous contradiction."
+      },
+      {
+        "id": "time_gap_180min_vibration",
+        "category": "different_timestamps",
+        "text_a": "The vibration was 5 mm/s at 09:00.",
+        "text_b": "The vibration was 9 mm/s at 12:00.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "temporal_inconsistency"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "temporal_inconsistency"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "temporal_inconsistency",
+              "severity": "medium",
+              "confidence": 0.6,
+              "description": "'vibration' is 5mm/s in one report and 9mm/s in another, measured about 180 minutes apart. These may reflect a genuine change over time rather than contradictory measurements, but the difference is large enough to warrant investigation.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Three hours apart and above the gap threshold; the difference may be a genuine trend rather than a contradiction."
+      },
+      {
+        "id": "time_gap_same_value",
+        "category": "different_timestamps",
+        "text_a": "The temperature was 65°C at 09:00.",
+        "text_b": "The temperature was 65°C at 11:00.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "The values agree, so there is nothing to flag regardless of the time gap."
+      },
+      {
+        "id": "time_close_gap_contradiction",
+        "category": "different_timestamps",
+        "text_a": "The temperature was 50°C at 10:00.",
+        "text_b": "The temperature was 90°C at 10:20.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "high",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 50°C and 90°C within the same time period with no distinguishing context (44% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "A 20-minute gap is below the 30-minute threshold, so the large difference is treated as a contemporaneous contradiction rather than a possible trend."
+      },
+      {
+        "id": "time_under_threshold_same_value",
+        "category": "different_timestamps",
+        "text_a": "The temperature was 40°C at 10:00.",
+        "text_b": "The temperature was 40°C at 10:15.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Same value and within the gap threshold; nothing to flag."
+      },
+      {
+        "id": "missing_context_one_timestamp",
+        "category": "missing_context",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The temperature was 76°C.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "missing_context"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "missing_context"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "missing_context",
+              "severity": "medium",
+              "confidence": 0.5,
+              "description": "'temperature' measurements differ (92°C vs 76°C) but only one report records a timestamp, so it is unclear whether the readings are contemporaneous.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Only one report records a time, so it is unclear whether the differing readings are contemporaneous; the detector flags missing time context rather than asserting a contradiction."
+      },
+      {
+        "id": "missing_context_both_no_timestamp",
+        "category": "missing_context",
+        "text_a": "The temperature was 92°C.",
+        "text_b": "The temperature was 40°C.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "high",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 92°C and 40°C within the same time period with no distinguishing context (57% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Neither report records a time, so there is no temporal differentiator and the large difference is a contemporaneous disagreement (a contradiction)."
+      },
+      {
+        "id": "missing_context_dimension_mismatch",
+        "category": "missing_context",
+        "text_a": "The vibration was 5 mm/s at 10:00 AM.",
+        "text_b": "The vibration was 5 mm at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "missing_context"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "missing_context"
+          ],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": [
+            {
+              "type": "missing_context",
+              "severity": "low",
+              "confidence": 0.45,
+              "description": "Measurements of 'vibration' use different or missing units (mm/s vs mm); they cannot be directly compared without unit context.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "mm/s (velocity) and mm (displacement) are different dimensions; comparison needs context."
+      },
+      {
+        "id": "doc_numeric_same_time",
+        "category": "conflicting_documents",
+        "text_a": "Machine M-17 reached a temperature of 92°C during inspection at 10:00 AM.",
+        "text_b": "Machine M-17 reached a temperature of 76°C during inspection at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "medium",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 92°C and 76°C within the same time period with no distinguishing context (17% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Two documents report different temperatures for the same machine at the same time; a direct contradiction."
+      },
+      {
+        "id": "doc_numeric_large_difference",
+        "category": "conflicting_documents",
+        "text_a": "The temperature was 20°C at 10:00 AM.",
+        "text_b": "The temperature was 95°C at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "high",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 20°C and 95°C within the same time period with no distinguishing context (79% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "A very large contemporaneous difference (>25%) between two documents; a clear contradiction."
+      },
+      {
+        "id": "doc_state_direct_contradiction",
+        "category": "conflicting_documents",
+        "text_a": "The machine was observed operating normally.",
+        "text_b": "The machine was observed not operating normally.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "direct_contradiction"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "direct_contradiction"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "direct_contradiction"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "direct_contradiction",
+              "severity": "high",
+              "confidence": 0.75,
+              "description": "One report states 'machine' was present, while another states it was absent. These assertions are directly opposed.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "One report affirms and the other negates the same observed state; directly opposed assertions."
+      },
+      {
+        "id": "doc_state_semantic_inconsistency",
+        "category": "conflicting_documents",
+        "text_a": "The machine status was normal.",
+        "text_b": "The machine status was abnormal.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "semantic_inconsistency"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "semantic_inconsistency"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "semantic_inconsistency"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "semantic_inconsistency",
+              "severity": "medium",
+              "confidence": 0.5,
+              "description": "Reports describe the 'machine' status differently: 'normal' vs 'abnormal'.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Both reports assert a status for the same subject but disagree on the value; a semantic inconsistency."
+      },
+      {
+        "id": "unreliable_source_outlier",
+        "category": "unreliable_sources",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The temperature was 40°C at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "high",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 92°C and 40°C within the same time period with no distinguishing context (57% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "A low-reliability source reporting an outlier still contradicts the reliable reading; the detector should flag it and let evidence scoring down-weight the unreliable source."
+      },
+      {
+        "id": "unreliable_sources_disagree",
+        "category": "unreliable_sources",
+        "text_a": "The temperature was 70°C at 10:00 AM.",
+        "text_b": "The temperature was 45°C at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": true,
+        "classification_correct": true,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "numerical_disagreement"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "numerical_disagreement"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "numerical_disagreement",
+              "severity": "high",
+              "confidence": 0.7,
+              "description": "'temperature' is reported as 70°C and 45°C within the same time period with no distinguishing context (36% difference).",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Two low-reliability sources still contradict each other; detection is independent of reliability, which is applied downstream."
+      },
+      {
+        "id": "unreliable_source_agrees",
+        "category": "unreliable_sources",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The temperature was 92°C at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "The low-reliability source agrees with the reliable one, so there is no contradiction to flag."
+      },
+      {
+        "id": "unreliable_sources_both_agree",
+        "category": "unreliable_sources",
+        "text_a": "The temperature was 55°C at 10:00 AM.",
+        "text_b": "The temperature was 55°C at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Consistent values, no contradiction."
+      },
+      {
+        "id": "insufficient_one_source_no_claim",
+        "category": "insufficient_evidence",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The maintenance team met on Tuesday to discuss the schedule.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 0,
+          "extraction_ok": false
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "The second text contains no structured claim, so there is insufficient information to establish a contradiction."
+      },
+      {
+        "id": "insufficient_both_vague",
+        "category": "insufficient_evidence",
+        "text_a": "Conditions were normal.",
+        "text_b": "Operations continued as planned.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 0,
+          "claims_b": 0,
+          "extraction_ok": false
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Neither text yields a comparable subject/property claim; nothing can be contradicted."
+      },
+      {
+        "id": "insufficient_single_source",
+        "category": "insufficient_evidence",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 0,
+          "extraction_ok": false
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Only one source provides evidence; a single observation cannot contradict itself."
+      },
+      {
+        "id": "insufficient_unrelated_subjects",
+        "category": "insufficient_evidence",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The pressure was 5 kPa at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Different properties of different quantities are different facts, not a contradiction."
+      },
+      {
+        "id": "equiv_reworded",
+        "category": "equivalent_statements",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "A temperature of 92°C was recorded at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "The same fact expressed in different words; equivalent, not contradictory."
+      },
+      {
+        "id": "equiv_reordered",
+        "category": "equivalent_statements",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "At 10:00 AM the temperature reading was 92°C.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Reordered clause, identical meaning; equivalent."
+      },
+      {
+        "id": "equiv_unit_equivalent",
+        "category": "equivalent_statements",
+        "text_a": "The temperature was 100°F at 10:00 AM.",
+        "text_b": "The temperature was 37.8°C at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Equivalent statements that use different units; must not be reported as a contradiction."
+      },
+      {
+        "id": "equiv_within_tolerance",
+        "category": "equivalent_statements",
+        "text_a": "The temperature was 65°C at 10:00 AM.",
+        "text_b": "The temperature was 65.5°C at 10:00 AM.",
+        "label": false,
+        "predicted_confirmed": false,
+        "classification_correct": true,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": true,
+        "type_correct": true,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "A 0.8% difference is within the 2% tolerance and is treated as measurement agreement, not a contradiction."
+      },
+      {
+        "id": "lex_subject_synonym_temp",
+        "category": "lexical_variation_and_negation",
+        "text_a": "The temperature was 92°C at 10:00 AM.",
+        "text_b": "The temp was 40°C at 10:00 AM.",
+        "label": true,
+        "predicted_confirmed": false,
+        "classification_correct": false,
+        "expected_flagged": true,
+        "expected_types": [
+          "numerical_disagreement"
+        ],
+        "flagged_correct": false,
+        "type_correct": false,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Hard case: 'temp' and 'temperature' denote the same property, so the same-time readings genuinely contradict. The rule-based extractor maps them to different subjects and is expected to miss this (false negative)."
+      },
+      {
+        "id": "lex_state_synonym_running",
+        "category": "lexical_variation_and_negation",
+        "text_a": "The machine was operating normally.",
+        "text_b": "The machine was not running.",
+        "label": true,
+        "predicted_confirmed": false,
+        "classification_correct": false,
+        "expected_flagged": true,
+        "expected_types": [
+          "direct_contradiction"
+        ],
+        "flagged_correct": false,
+        "type_correct": false,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 0,
+          "extraction_ok": false
+        },
+        "prediction": {
+          "predicted_flag": false,
+          "predicted_types": [],
+          "predicted_confirmed": false,
+          "confirmed_types": [],
+          "conflict_descriptions": []
+        },
+        "rationale": "Hard case: 'not running' opposes 'operating normally'. 'running' is not in the state/status vocabulary, so the second statement is expected to yield no claim and be missed (false negative)."
+      },
+      {
+        "id": "lex_negation_scope_false_positive",
+        "category": "lexical_variation_and_negation",
+        "text_a": "The machine was operating normally, with no anomalies.",
+        "text_b": "The machine was operating normally.",
+        "label": false,
+        "predicted_confirmed": true,
+        "classification_correct": false,
+        "expected_flagged": false,
+        "expected_types": [],
+        "flagged_correct": false,
+        "type_correct": false,
+        "extraction": {
+          "claims_a": 1,
+          "claims_b": 1,
+          "extraction_ok": true
+        },
+        "prediction": {
+          "predicted_flag": true,
+          "predicted_types": [
+            "direct_contradiction"
+          ],
+          "predicted_confirmed": true,
+          "confirmed_types": [
+            "direct_contradiction"
+          ],
+          "conflict_descriptions": [
+            {
+              "type": "direct_contradiction",
+              "severity": "high",
+              "confidence": 0.75,
+              "description": "One report states 'machine' was normal, while another states it was normal. These assertions are directly opposed.",
+              "detection_method": "rule_based"
+            }
+          ]
+        },
+        "rationale": "Hard case: both statements say the machine is normal, so there is no contradiction. The word 'no' is a negation marker, so the detector is expected to flip the first statement's polarity and raise a spurious direct_contradiction (false positive)."
+      }
+    ]
+  },
+  "evidence_sufficiency": {
+    "dataset": {
+      "name": "neurosync-evidence-sufficiency-eval",
+      "version": "1.0.0",
+      "num_scenarios": 6
+    },
+    "accuracy": {
+      "total": 6,
+      "correct": 6,
+      "accuracy": 1.0,
+      "per_class": {
+        "contradicted": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "inconclusive": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "review_required": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        },
+        "supported": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0
+        }
+      }
+    },
+    "partition_traceability_rate": 1.0,
+    "scenarios": [
+      {
+        "id": "no_evidence",
+        "category": "insufficient_evidence",
+        "description": "A hypothesis with no supporting or contradicting evidence at all.",
+        "expected_status": "inconclusive",
+        "predicted_status": "inconclusive",
+        "correct": true,
+        "support_score": 0.5,
+        "confidence": 0.4,
+        "distinct_sources": 0,
+        "supporting_count": 0,
+        "contradicting_count": 0,
+        "supporting_weight": 0.0,
+        "contradicting_weight": 0.0,
+        "has_direct_evidence": false,
+        "partition_correct": true,
+        "scoring_explanation": "0 supporting item(s) and 0 contradicting item(s) across 0 distinct source(s). Composite support=0.50, status=inconclusive. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "With no evidence the system must not claim any support; insufficient evidence cannot yield a supported conclusion."
+      },
+      {
+        "id": "single_source_direct_support",
+        "category": "evidence_sufficiency",
+        "description": "Three direct measurement items, all from one document.",
+        "expected_status": "review_required",
+        "predicted_status": "review_required",
+        "correct": true,
+        "support_score": 0.821,
+        "confidence": 0.757,
+        "distinct_sources": 1,
+        "supporting_count": 3,
+        "contradicting_count": 0,
+        "supporting_weight": 1.7875,
+        "contradicting_weight": 0.0,
+        "has_direct_evidence": true,
+        "partition_correct": true,
+        "scoring_explanation": "3 supporting item(s) and 0 contradicting item(s) across 1 distinct source(s). Composite support=0.82, status=review_required. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "Repeated claims from the same source are not independent corroboration, so a single-source hypothesis must be flagged for review instead of 'supported'."
+      },
+      {
+        "id": "multi_source_direct_support",
+        "category": "evidence_sufficiency",
+        "description": "Direct high-reliability items from three distinct documents.",
+        "expected_status": "supported",
+        "predicted_status": "supported",
+        "correct": true,
+        "support_score": 0.863,
+        "confidence": 0.95,
+        "distinct_sources": 3,
+        "supporting_count": 3,
+        "contradicting_count": 0,
+        "supporting_weight": 2.6475,
+        "contradicting_weight": 0.0,
+        "has_direct_evidence": true,
+        "partition_correct": true,
+        "scoring_explanation": "3 supporting item(s) and 0 contradicting item(s) across 3 distinct source(s). Composite support=0.86, status=supported. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "Independent direct corroboration from multiple sources is the intended basis for a supported hypothesis."
+      },
+      {
+        "id": "contradicting_outweighs",
+        "category": "evidence_sufficiency",
+        "description": "One weak supporting item against two strong contradicting items.",
+        "expected_status": "contradicted",
+        "predicted_status": "contradicted",
+        "correct": true,
+        "support_score": 0.261,
+        "confidence": 0.309,
+        "distinct_sources": 1,
+        "supporting_count": 1,
+        "contradicting_count": 2,
+        "supporting_weight": 0.405,
+        "contradicting_weight": 1.765,
+        "has_direct_evidence": false,
+        "partition_correct": true,
+        "scoring_explanation": "1 supporting item(s) and 2 contradicting item(s) across 1 distinct source(s). Composite support=0.26, status=contradicted. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "When contradicting evidence clearly outweighs support, the hypothesis should be marked contradicted rather than supported."
+      },
+      {
+        "id": "balanced_support_and_contradiction",
+        "category": "evidence_sufficiency",
+        "description": "Equal-weight supporting and contradicting evidence.",
+        "expected_status": "inconclusive",
+        "predicted_status": "inconclusive",
+        "correct": true,
+        "support_score": 0.556,
+        "confidence": 0.545,
+        "distinct_sources": 1,
+        "supporting_count": 1,
+        "contradicting_count": 1,
+        "supporting_weight": 0.5,
+        "contradicting_weight": 0.5,
+        "has_direct_evidence": false,
+        "partition_correct": true,
+        "scoring_explanation": "1 supporting item(s) and 1 contradicting item(s) across 1 distinct source(s). Composite support=0.56, status=inconclusive. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "Balanced conflicting evidence must remain inconclusive; the system should not force a conclusion."
+      },
+      {
+        "id": "unreliable_support_outweighed",
+        "category": "source_reliability",
+        "description": "A single low-reliability, low-relevance supporting item against two strong contradicting items.",
+        "expected_status": "contradicted",
+        "predicted_status": "contradicted",
+        "correct": true,
+        "support_score": 0.241,
+        "confidence": 0.293,
+        "distinct_sources": 1,
+        "supporting_count": 1,
+        "contradicting_count": 2,
+        "supporting_weight": 0.2725,
+        "contradicting_weight": 1.8,
+        "has_direct_evidence": false,
+        "partition_correct": true,
+        "scoring_explanation": "1 supporting item(s) and 2 contradicting item(s) across 1 distinct source(s). Composite support=0.24, status=contradicted. Scores are bounded support indicators, not calibrated probabilities.",
+        "rationale": "Unreliable, low-relevance support should not survive strong contradicting evidence; the hypothesis is contradicted."
+      }
+    ]
+  },
+  "conclusion_traceability": {
+    "investigation_id": 1,
+    "conclusions_total": 7,
+    "fully_traceable": 7,
+    "traceability_rate": 1.0,
+    "conclusions_linked_to_conflict": 7,
+    "conclusions_linked_to_claims": 7,
+    "decisions": [
+      "human_review_required",
+      "inconclusive",
+      "supported_conclusion"
+    ],
+    "conclusions": [
+      {
+        "conclusion_id": 1,
+        "conflict_id": 1,
+        "decision_type": "inconclusive",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 2,
+        "conflict_id": 2,
+        "decision_type": "human_review_required",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          1,
+          2,
+          3
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 3,
+        "conflict_id": 3,
+        "decision_type": "supported_conclusion",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          4,
+          5,
+          6
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": true,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 4,
+        "conflict_id": 4,
+        "decision_type": "inconclusive",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          7
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 5,
+        "conflict_id": 5,
+        "decision_type": "inconclusive",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          10
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 6,
+        "conflict_id": 6,
+        "decision_type": "inconclusive",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          12
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      },
+      {
+        "conclusion_id": 7,
+        "conflict_id": 7,
+        "decision_type": "human_review_required",
+        "conflict_linked": true,
+        "claims_traceable": true,
+        "supporting_evidence_ids": [
+          23
+        ],
+        "support_ids_exist": true,
+        "support_ids_belong_to_conflict": true,
+        "requires_explicit_support": false,
+        "support_sufficient": true,
+        "fully_traceable": true,
+        "references_conflict_claims": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "name": "neurosync-evidence-sufficiency-eval",
+  "version": "1.0.0",
+  "created": "2026-10-11",
+  "description": "Labeled evidence configurations for measuring whether NeuroSync's transparent scoring correctly decides that a conclusion has sufficient supporting evidence. Each scenario is materialised as real Conflict/Hypothesis/Evidence rows and scored with the production app.services.scoring_service.score_hypothesis function.",
+  "status_classes": ["supported", "review_required", "inconclusive", "contradicted"],
+  "expected_status_definition": {
+    "supported": "Multiple independent direct sources corroborate the hypothesis; it may be presented as supported.",
+    "review_required": "A single source supports the hypothesis. The design contract states that one source is NOT independent corroboration, so the hypothesis must never be marked 'supported'.",
+    "inconclusive": "Evidence is absent, or supporting and contradicting evidence are balanced; no defensible conclusion can be drawn.",
+    "contradicted": "Contradicting evidence clearly outweighs supporting evidence."
+  },
+  "evidence_weight_model": "weight = 0.40*relevance + 0.35*reliability + 0.25*directness, clamped to [0,1]. Missing reliability defaults from evidence_type; missing relevance/directness default to 0.5.",
+  "notes": [
+    "document_index refers to a distinct synthetic source document so that 'distinct source' semantics can be exercised.",
+    "These scenarios test a design contract (e.g. single-source support must not be 'supported'), not merely a re-derivation of the scoring formula."
+  ],
+  "scenarios": [
+    {
+      "id": "no_evidence",
+      "category": "insufficient_evidence",
+      "description": "A hypothesis with no supporting or contradicting evidence at all.",
+      "documents": 1,
+      "supporting": [],
+      "contradicting": [],
+      "expected_status": "inconclusive",
+      "rationale": "With no evidence the system must not claim any support; insufficient evidence cannot yield a supported conclusion."
+    },
+    {
+      "id": "single_source_direct_support",
+      "category": "evidence_sufficiency",
+      "description": "Three direct measurement items, all from one document.",
+      "documents": 1,
+      "supporting": [
+        {"document_index": 0, "evidence_type": "measurement", "relevance": 0.8, "reliability": 0.8, "directness": 0.9},
+        {"document_index": 0, "evidence_type": "measurement", "relevance": 0.8, "reliability": 0.8, "directness": 0.9},
+        {"document_index": 0, "evidence_type": "measurement", "relevance": 0.8, "reliability": 0.8, "directness": 0.9}
+      ],
+      "contradicting": [],
+      "expected_status": "review_required",
+      "rationale": "Repeated claims from the same source are not independent corroboration, so a single-source hypothesis must be flagged for review instead of 'supported'."
+    },
+    {
+      "id": "multi_source_direct_support",
+      "category": "evidence_sufficiency",
+      "description": "Direct high-reliability items from three distinct documents.",
+      "documents": 3,
+      "supporting": [
+        {"document_index": 0, "evidence_type": "measurement", "relevance": 0.9, "reliability": 0.85, "directness": 0.9},
+        {"document_index": 1, "evidence_type": "measurement", "relevance": 0.9, "reliability": 0.85, "directness": 0.9},
+        {"document_index": 2, "evidence_type": "calibration_record", "relevance": 0.9, "reliability": 0.85, "directness": 0.9}
+      ],
+      "contradicting": [],
+      "expected_status": "supported",
+      "rationale": "Independent direct corroboration from multiple sources is the intended basis for a supported hypothesis."
+    },
+    {
+      "id": "contradicting_outweighs",
+      "category": "evidence_sufficiency",
+      "description": "One weak supporting item against two strong contradicting items.",
+      "documents": 3,
+      "supporting": [
+        {"document_index": 0, "evidence_type": "contextual", "relevance": 0.5, "reliability": 0.3, "directness": 0.4}
+      ],
+      "contradicting": [
+        {"document_index": 1, "evidence_type": "measurement", "relevance": 0.9, "reliability": 0.85, "directness": 0.9},
+        {"document_index": 2, "evidence_type": "measurement", "relevance": 0.9, "reliability": 0.85, "directness": 0.9}
+      ],
+      "expected_status": "contradicted",
+      "rationale": "When contradicting evidence clearly outweighs support, the hypothesis should be marked contradicted rather than supported."
+    },
+    {
+      "id": "balanced_support_and_contradiction",
+      "category": "evidence_sufficiency",
+      "description": "Equal-weight supporting and contradicting evidence.",
+      "documents": 2,
+      "supporting": [
+        {"document_index": 0, "evidence_type": "document_statement", "relevance": 0.5, "reliability": 0.5, "directness": 0.5}
+      ],
+      "contradicting": [
+        {"document_index": 1, "evidence_type": "document_statement", "relevance": 0.5, "reliability": 0.5, "directness": 0.5}
+      ],
+      "expected_status": "inconclusive",
+      "rationale": "Balanced conflicting evidence must remain inconclusive; the system should not force a conclusion."
+    },
+    {
+      "id": "unreliable_support_outweighed",
+      "category": "source_reliability",
+      "description": "A single low-reliability, low-relevance supporting item against two strong contradicting items.",
+      "documents": 3,
+      "supporting": [
+        {"document_index": 0, "evidence_type": "user_supplied", "relevance": 0.3, "reliability": 0.15, "directness": 0.4}
+      ],
+      "contradicting": [
+        {"document_index": 1, "evidence_type": "measurement", "relevance": 0.9, "reliability": 0.9, "directness": 0.9},
+        {"document_index": 2, "evidence_type": "calibration_record", "relevance": 0.9, "reliability": 0.9, "directness": 0.9}
+      ],
+      "expected_status": "contradicted",
+      "rationale": "Unreliable, low-relevance support should not survive strong contradicting evidence; the hypothesis is contradicted."
+    }
+  ]
+}

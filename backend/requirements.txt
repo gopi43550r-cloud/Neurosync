@@ -1,0 +1,17 @@
+# NeuroSync backend dependencies (runtime)
+# Pins updated by security audit (pip-audit, Oct 2026):
+#   fastapi/starlette, python-multipart, pytest -> fixed releases for OSV
+#   advisories PYSEC-2026-161/248/249/1941/1942/2280/2281 (starlette),
+#   1852/3036/3037/3038/3039/3040 (python-multipart) and 1845 (pytest).
+fastapi==0.143.0
+starlette==1.7.0
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+pydantic==2.10.4
+pydantic-settings==2.7.0
+python-multipart==0.0.32
+httpx==0.28.1
+
+# Document processing
+python-docx==1.1.2
+PyMuPDF==1.25.1

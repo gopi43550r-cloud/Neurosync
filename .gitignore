@@ -1,0 +1,41 @@
+# Python / backend
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+venv/
+.venv/
+env/
+
+# Databases and uploads (local runtime state)
+*.db
+*.sqlite
+*.sqlite3
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Environment / secrets
+.env
+.env.local
+.env.prod
+*.env.local
+
+# Local backups produced by scripts/backup.sh
+backups/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
