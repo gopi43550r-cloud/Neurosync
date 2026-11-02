@@ -65,8 +65,14 @@ cp .env.prod.example .env
 Backend-only variables (set directly via `backend/.env` or the platform's env
 UI) are documented in [`backend/.env.production.example`](../backend/.env.production.example).
 
-**Never commit a filled-in `.env`.** `.gitignore` excludes `.env` and
-`.env.prod`; the `*.example` files are safe to commit.
+The optional key may also be entered in **Settings → OpenAI API key**. That writes
+`backend/.env.local` (git-ignored, loaded after `.env`), so it must point at a
+writable persistent location. Provider environment variables still take
+precedence. In-app key writes are disabled when `ENVIRONMENT=production` and
+`API_TOKEN` is empty (the endpoint returns `403`); reads remain available.
+
+**Never commit a filled-in `.env`.** `.gitignore` excludes `.env`, `.env.local`
+and `.env.prod`; the `*.example` files are safe to commit.
 
 ## 2. Verify locally before deploying
 

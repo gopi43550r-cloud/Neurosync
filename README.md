@@ -73,6 +73,13 @@ and traceable.
   shows live agent activity, the blackboard graph and an event feed.
 - **Reports** — export investigations as Markdown or JSON with a confidence
   explanation, hypothesis ranking, evidence gaps and explicit limitations.
+- **Evaluation & performance dashboard** — measured conflict-detection and
+  evidence-verification quality against human-labelled ground truth (TP/TN/FP/FN,
+  accuracy, precision, recall, F1, confusion matrices), real agent execution
+  statistics, document-processing analytics, test-case creation/upload, and CSV
+  or PDF export. Built-in reference benchmarks and user-labelled test sets are
+  reported separately; no metric is invented and a detected conflict is never
+  counted correct without a ground-truth label.
 - **Clearly labelled demo data** — an industrial diagnostic scenario is shipped
   and always marked as demonstration data.
 
@@ -154,6 +161,8 @@ Open `http://localhost:5173`. The dev server proxies `/api` to the backend.
 4. Open **Conflicts** to read the "why flagged" explanation, compare the two
    claims side by side, and inspect evidence and hypotheses.
 5. Open **Reports** to read and export the result as Markdown or JSON.
+6. Open **Evaluation** to run the labelled benchmarks, inspect precision/recall,
+   the confusion matrix and real agent timings, and export results as CSV or PDF.
 
 ---
 
@@ -188,6 +197,13 @@ Reports are written to `evaluation/results/`. See
 [`backend/evaluation/README.md`](backend/evaluation/README.md) for the dataset,
 labels, metrics, failure cases and limitations.
 
+The same labelled benchmarks are available in the app under **Evaluation**. A run
+executes the production extraction, conflict-detection and fact-verification code
+in an isolated in-memory database and persists only run metadata and per-case
+outcomes. Built-in reference benchmarks and user-labelled test sets are reported
+separately, and only labelled cases are ever scored. Runs can be exported as CSV
+or PDF.
+
 ---
 
 ## Project layout
@@ -214,7 +230,7 @@ neurosync/
 │       ├── api/             # typed API client
 │       ├── components/      # shell, UI primitives, badges, toasts
 │       ├── hooks/           # data fetching + SSE
-│       └── pages/           # the eleven application pages
+│       └── pages/           # the twelve application pages
 ├── docs/
 │   ├── ARCHITECTURE.md      # design, scheduler, scoring, knowledge graph
 │   ├── API_REFERENCE.md     # endpoint-by-endpoint reference
@@ -264,7 +280,10 @@ configuration, HTTPS, access restriction, backups and a verification checklist.
 
 ## Configuration
 
-All configuration is environment-driven (see `backend/.env.example`):
+All configuration is environment-driven (see `backend/.env.example`). The optional
+API key may also be added from **Settings → OpenAI API key**, which writes it to
+`backend/.env.local` (git-ignored, loaded after `.env`). Real environment
+variables always take precedence.
 
 | Variable                   | Default                              | Purpose                                  |
 | -------------------------- | ------------------------------------ | ---------------------------------------- |
@@ -294,7 +313,9 @@ All configuration is environment-driven (see `backend/.env.example`):
 > `ENABLE_LLM` and a key make AI *available*; the user-ready **reasoning mode**
 > toggle in Settings (`deterministic` / `ai_assisted`, stored in the DB) decides
 > whether it is actually used. If AI is selected without a configured provider,
-> the app reports this and runs deterministically rather than failing.
+> the app reports this and runs deterministically rather than failing. Saving a
+> key from Settings enables `ENABLE_LLM` for the running process and persists it
+> to `backend/.env.local`.
 
 ---
 
@@ -324,9 +345,12 @@ Safety properties, all enforced in code and covered by tests:
   responses are retried and then fall back to deterministic behaviour without
   crashing an investigation.
 - **Keys never leak.** The API key is only sent in the `Authorization` header and
-  is never logged or returned in a response.
+  is never logged or returned in a response. In-app key management returns only a
+  boolean and a masked hint, and rejects malformed values before writing them.
 
-To enable it:
+To enable it, either add the key in **Settings → OpenAI API key** (recommended;
+it is stored server-side in `backend/.env.local` and never returned to the
+browser), or set it in `backend/.env`:
 
 ```powershell
 # backend/.env

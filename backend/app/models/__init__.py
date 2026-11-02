@@ -8,6 +8,12 @@ from .audit import AuditEvent
 from .claim import Claim, Observation
 from .conflict import Conflict
 from .document import Document, DocumentContent
+from .evaluation import (
+    EvaluationCase,
+    EvaluationCaseResult,
+    EvaluationDataset,
+    EvaluationRun,
+)
 from .event import EventLog
 from .evidence import Evidence
 from .hypothesis import Hypothesis
@@ -31,6 +37,10 @@ __all__ = [
     "Conflict",
     "Document",
     "DocumentContent",
+    "EvaluationCase",
+    "EvaluationCaseResult",
+    "EvaluationDataset",
+    "EvaluationRun",
     "EventLog",
     "Evidence",
     "Hypothesis",

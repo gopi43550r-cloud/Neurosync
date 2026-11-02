@@ -4,6 +4,7 @@ import {
   Bot,
   FileText,
   FlaskConical,
+  Gauge,
   History,
   LayoutDashboard,
   Lightbulb,
@@ -32,6 +33,7 @@ const NAV = [
   { to: "/evidence", label: "Evidence", icon: FlaskConical },
   { to: "/investigations", label: "Investigations", icon: Radar },
   { to: "/reports", label: "Reports", icon: ScrollText },
+  { to: "/evaluation", label: "Evaluation", icon: Gauge },
   { to: "/audit", label: "Audit Trail", icon: History },
   { to: "/settings", label: "Settings", icon: Settings },
 ];

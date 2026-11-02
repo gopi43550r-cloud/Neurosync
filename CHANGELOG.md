@@ -17,6 +17,28 @@ The version is declared in three places and they must stay in step:
 
 ### Added
 
+- **Evaluation & performance dashboard** — measured quality against
+  human-labelled ground truth plus live operational analytics. Conflict detection
+  is scored with TP/TN/FP/FN, accuracy, precision, recall, F1 and a confusion
+  matrix; evidence verification is scored with the four production verdicts and a
+  multi-class confusion matrix. Agent execution status/timings and
+  document-processing statistics come from the real audit and document tables.
+  Test sets can be created or uploaded (JSON), executed against the production
+  code in an isolated in-memory database, inspected case by case, and exported as
+  CSV or PDF. Built-in reference benchmarks (`builtin:conflict-detection`, 32
+  cases; `builtin:evidence-verification`, 9 cases) and user-labelled sets are
+  reported separately; unlabelled demonstration records are never scored
+  (`services/evaluation_service.py`, `services/evaluation_export.py`,
+  `/api/evaluation/*`, `pages/Evaluation.tsx`).
+- **In-app OpenAI API-key management** — the Settings page can add, update or
+  remove the optional OpenAI-compatible key without editing files. The key is
+  validated, persisted to the git-ignored `backend/.env.local` (loaded after
+  `.env`, with process environment still taking precedence) and applied to the
+  running process immediately. The API never returns the key: only a boolean, a
+  masked hint and non-secret provider settings. Writes are refused on an
+  unauthenticated production instance
+  (`services/llm_settings_service.py`, `/api/settings/llm`,
+  `/api/settings/llm/key`, `pages/Settings.tsx`).
 - **Claim-level fact verification** — claims are verified against the documents,
   claims and evidence already stored, producing `supported`, `contradicted`,
   `partially_supported` or `unverified` with grounded citations (document,
@@ -70,8 +92,9 @@ The version is declared in three places and they must stay in step:
 
 - Added `test_fact_verification.py`, `test_source_credibility.py`,
   `test_evidence_assessment.py`, `test_dashboard_snapshot.py`,
-  `test_chat_assistant.py` and new review-decision cases in
-  `test_audit_review_ranking.py`. Backend suite: **245 tests passing**.
+  `test_chat_assistant.py`, `test_evaluation_dashboard.py`,
+  `test_llm_settings.py` and new review-decision cases in
+  `test_audit_review_ranking.py`. Backend suite: **284 tests passing**.
 
 ---
 

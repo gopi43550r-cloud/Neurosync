@@ -1,0 +1,151 @@
+{
+  "name": "neurosync-evidence-verification-benchmark",
+  "version": "1.0.0",
+  "created": "2026-11-02",
+  "description": "Human-labelled claim/source pairs for measuring whether NeuroSync's deterministic fact-verification engine classifies evidence as supported, contradicted, partially supported or unverified. Each target claim and every comparison document is processed by the production extraction and fact-verification code; the labels are authored independently of the engine's output.",
+  "labels": ["supported", "contradicted", "partially_supported", "unverified"],
+  "label_definition": {
+    "supported": "At least one independent source agrees with the target claim and no independent source contradicts it.",
+    "contradicted": "At least one independent source contradicts the target claim and no independent source supports it.",
+    "partially_supported": "Independent sources both support and contradict the claim, so the evidence is mixed.",
+    "unverified": "No independent source decides the claim, or the only comparable evidence is neutral (for example a reading taken much later that may reflect a genuine change)."
+  },
+  "cases": [
+    {
+      "id": "supported_same_value",
+      "category": "support",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "inspection_b.txt",
+          "role": "supporting",
+          "text": "The temperature was 92°C at 10:00 AM."
+        }
+      ],
+      "expected": {"verdict": "supported"},
+      "rationale": "An independent second document reports the same temperature at the same time."
+    },
+    {
+      "id": "supported_multiple_sources",
+      "category": "support",
+      "claim_text": "The temperature was 65°C at 09:00.",
+      "documents": [
+        {
+          "filename": "logger_a.txt",
+          "role": "supporting",
+          "text": "The temperature was 65°C at 09:00."
+        },
+        {
+          "filename": "logger_b.txt",
+          "role": "supporting",
+          "text": "The temperature was 65°C at 09:00."
+        }
+      ],
+      "expected": {"verdict": "supported"},
+      "rationale": "Two independent documents corroborate the same reading."
+    },
+    {
+      "id": "supported_unit_equivalent",
+      "category": "support",
+      "claim_text": "The temperature was 100°F at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "metric_report.txt",
+          "role": "supporting",
+          "text": "The temperature was 37.8°C at 10:00 AM."
+        }
+      ],
+      "expected": {"verdict": "supported"},
+      "rationale": "100°F equals 37.8°C within rounding, so the differently expressed reading agrees after unit normalisation."
+    },
+    {
+      "id": "contradicted_same_time",
+      "category": "contradiction",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "inspection_b.txt",
+          "role": "contradicting",
+          "text": "The temperature was 76°C at 10:00 AM."
+        }
+      ],
+      "expected": {"verdict": "contradicted"},
+      "rationale": "A contemporaneous independent source reports a materially different temperature for the same subject."
+    },
+    {
+      "id": "contradicted_state",
+      "category": "contradiction",
+      "claim_text": "The machine was operating normally.",
+      "documents": [
+        {
+          "filename": "shift_note.txt",
+          "role": "contradicting",
+          "text": "The machine was not operating normally."
+        }
+      ],
+      "expected": {"verdict": "contradicted"},
+      "rationale": "One source affirms and another negates the same observed state."
+    },
+    {
+      "id": "partially_supported_mixed",
+      "category": "mixed",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "inspection_agree.txt",
+          "role": "supporting",
+          "text": "The temperature was 92°C at 10:00 AM."
+        },
+        {
+          "filename": "inspection_disagree.txt",
+          "role": "contradicting",
+          "text": "The temperature was 76°C at 10:00 AM."
+        }
+      ],
+      "expected": {"verdict": "partially_supported"},
+      "rationale": "One independent source agrees and another contradicts, so the evidence is genuinely mixed."
+    },
+    {
+      "id": "unverified_no_comparable_source",
+      "category": "insufficient_evidence",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "unrelated_note.txt",
+          "role": "context",
+          "text": "The maintenance team met on Tuesday to discuss the schedule."
+        }
+      ],
+      "expected": {"verdict": "unverified"},
+      "rationale": "The other document contains no comparable claim, so the engine must not assert support or contradiction."
+    },
+    {
+      "id": "unverified_different_subject",
+      "category": "insufficient_evidence",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "pressure_log.txt",
+          "role": "context",
+          "text": "The pressure was 5 kPa at 10:00 AM."
+        }
+      ],
+      "expected": {"verdict": "unverified"},
+      "rationale": "A different property of the machine is a different fact, not evidence about the temperature claim."
+    },
+    {
+      "id": "unverified_time_gap_is_neutral",
+      "category": "insufficient_evidence",
+      "claim_text": "The temperature was 92°C at 10:00 AM.",
+      "documents": [
+        {
+          "filename": "inspection_later.txt",
+          "role": "context",
+          "text": "The temperature was 76°C at 11:30 AM."
+        }
+      ],
+      "expected": {"verdict": "unverified"},
+      "rationale": "The readings are 90 minutes apart, so the difference may be a genuine change over time; the engine must treat it as neutral rather than a contradiction."
+    }
+  ]
+}

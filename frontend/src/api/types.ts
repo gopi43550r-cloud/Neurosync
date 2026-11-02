@@ -747,6 +747,28 @@ export interface ReasoningSettings {
   note: string;
 }
 
+export interface LLMSettings {
+  configured: boolean;
+  active: boolean;
+  source: "environment" | "saved" | "none" | string;
+  key_hint: string | null;
+  model: string | null;
+  base_url: string | null;
+  provider: string;
+  enable_llm: boolean;
+  reasoning_mode: "deterministic" | "ai_assisted";
+  effective_mode: "deterministic" | "ai_assisted";
+  storage: string;
+  note: string;
+}
+
+export interface LLMSettingsUpdate {
+  api_key?: string;
+  model?: string;
+  base_url?: string;
+  enable_llm?: boolean;
+}
+
 export interface InvestigationEvent {
   id: number;
   event_type: string;
@@ -1072,3 +1094,133 @@ export interface ChatSuggestions {
   suggestions: string[];
   note: string;
 }
+
+// -------------------------------------------------- Evaluation dashboard
+export type EvaluationKind = "conflict_detection" | "evidence_verification";
+export type EvaluationProvenance = "reference_labelled" | "user_labelled";
+
+export interface EvaluationCaseResultOut {
+  id: number;
+  case_key: string;
+  category: string;
+  expected: Record<string, any>;
+  predicted: Record<string, any>;
+  passed: boolean;
+  duration_ms: number;
+  explanation: string;
+}
+
+export interface EvaluationRunSummaryOut {
+  id: number;
+  dataset_id: number;
+  dataset_name: string;
+  kind: string;
+  provenance: string;
+  status: string;
+  case_count: number;
+  passed: number;
+  failed: number;
+  duration_ms: number;
+  error: string;
+  metrics: Record<string, any>;
+  confusion: Record<string, any>;
+  started_at: string | null;
+  completed_at: string | null;
+}
+
+export interface EvaluationRunOut extends EvaluationRunSummaryOut {
+  by_category: Record<string, any>;
+  failures: Record<string, any>[];
+  config: Record<string, any>;
+  results: EvaluationCaseResultOut[];
+}
+
+export interface EvaluationDatasetOut {
+  id: number;
+  key: string;
+  name: string;
+  description: string;
+  kind: string;
+  source: string;
+  version: string;
+  is_builtin: boolean;
+  case_count: number;
+  created_at: string | null;
+  updated_at: string | null;
+  latest_run: EvaluationRunSummaryOut | null;
+}
+
+export interface EvaluationCaseOut {
+  id: number;
+  case_key: string;
+  category: string;
+  payload: Record<string, any>;
+  expected: Record<string, any>;
+  rationale: string;
+  created_at: string | null;
+}
+
+export interface EvaluationDatasetDetailOut extends EvaluationDatasetOut {
+  cases: EvaluationCaseOut[];
+}
+
+export interface AgentPerformanceOut {
+  name: string;
+  responsibility: string;
+  status: string;
+  total_tasks: number;
+  completed_tasks: number;
+  failed_tasks: number;
+  skipped_tasks: number;
+  total_duration_ms: number;
+  avg_duration_ms: number | null;
+  max_duration_ms: number;
+  last_action: string;
+  last_activity_at: string | null;
+}
+
+export interface AgentPerformanceSummary {
+  agents: AgentPerformanceOut[];
+  total_tasks: number;
+  completed_tasks: number;
+  failed_tasks: number;
+  skipped_tasks: number;
+  avg_duration_ms: number | null;
+}
+
+export interface DocumentAnalyticsOut {
+  documents_total: number;
+  documents_processed: number;
+  documents_pending: number;
+  documents_processing: number;
+  documents_error: number;
+  documents_by_status: Record<string, number>;
+  documents_with_timing: number;
+  avg_processing_ms: number | null;
+  max_processing_ms: number | null;
+  total_processing_ms: number;
+  claims_extracted: number;
+  documents_with_claims: number;
+  conflicts_detected: number;
+  conflicts_resolved: number;
+  hypotheses_total: number;
+  evidence_total: number;
+  investigations_total: number;
+  investigations_by_status: Record<string, number>;
+  investigations_with_timing: number;
+  avg_investigation_ms: number | null;
+  total_iterations: number;
+  documents_by_day: { date: string; documents: number; processed: number }[];
+}
+
+export interface EvaluationDashboardOut {
+  generated_at: string;
+  disclaimer: string;
+  validation_note: string;
+  datasets: EvaluationDatasetOut[];
+  conflict_detection: EvaluationRunOut | null;
+  evidence_verification: EvaluationRunOut | null;
+  agents: AgentPerformanceSummary;
+  documents: DocumentAnalyticsOut;
+}
+

@@ -13,6 +13,7 @@ import Evidence from "./pages/Evidence";
 import Investigations from "./pages/Investigations";
 import InvestigationWorkspace from "./pages/InvestigationWorkspace";
 import Reports from "./pages/Reports";
+import Evaluation from "./pages/Evaluation";
 import Audit from "./pages/Audit";
 import Settings from "./pages/Settings";
 
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="investigations" element={<Investigations />} />
         <Route path="investigations/:id" element={<InvestigationWorkspace />} />
         <Route path="reports" element={<Reports />} />
+        <Route path="evaluation" element={<Evaluation />} />
         <Route path="audit" element={<Audit />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />

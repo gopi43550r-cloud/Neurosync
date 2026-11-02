@@ -75,3 +75,66 @@ def compute_status_accuracy(expected: list[str], predicted: list[str]) -> dict:
         "accuracy": _rate(correct, total),
         "per_class": per_class,
     }
+
+
+def compute_multiclass_metrics(
+    expected: list[str], predicted: list[str], labels: list[str] | None = None
+) -> dict:
+    """Full multi-class report with a confusion matrix.
+
+    The caller supplies the label order so an absent class is still visible in
+    the matrix (and its precision/recall is reported as ``None``, never zero).
+    Macro averages skip undefined per-class rates so a label with no examples
+    cannot silently deflate the headline score.
+    """
+    label_order = list(labels or sorted(set(expected) | set(predicted)))
+    total = len(expected)
+    correct = sum(1 for e, p in zip(expected, predicted) if e == p)
+
+    per_class: dict[str, dict] = {}
+    confusion: dict[str, dict[str, int]] = {
+        label: {other: 0 for other in label_order} for label in label_order
+    }
+    for label, prediction in zip(expected, predicted):
+        if label not in confusion:
+            confusion[label] = {other: 0 for other in label_order}
+        if prediction in confusion[label]:
+            confusion[label][prediction] += 1
+
+    for label in label_order:
+        tp = sum(1 for e, p in zip(expected, predicted) if e == label and p == label)
+        fp = sum(1 for e, p in zip(expected, predicted) if e != label and p == label)
+        fn = sum(1 for e, p in zip(expected, predicted) if e == label and p != label)
+        support = sum(1 for e in expected if e == label)
+        precision = _rate(tp, tp + fp)
+        recall = _rate(tp, tp + fn)
+        per_class[label] = {
+            "tp": tp,
+            "fp": fp,
+            "fn": fn,
+            "support": support,
+            "precision": precision,
+            "recall": recall,
+            "f1": _rate(2 * precision * recall, precision + recall)
+            if precision is not None and recall is not None and (precision + recall) > 0
+            else (0.0 if precision == 0.0 or recall == 0.0 else None),
+        }
+
+    def _macro(field: str) -> float | None:
+        values = [m[field] for m in per_class.values() if m[field] is not None]
+        if not values:
+            return None
+        return round(sum(values) / len(values), 4)
+
+    return {
+        "labels": label_order,
+        "total": total,
+        "correct": correct,
+        "accuracy": _rate(correct, total),
+        "macro_precision": _macro("precision"),
+        "macro_recall": _macro("recall"),
+        "macro_f1": _macro("f1"),
+        "per_class": per_class,
+        "confusion": confusion,
+    }
+

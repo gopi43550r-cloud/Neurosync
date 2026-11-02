@@ -12,6 +12,11 @@ import type {
   DocumentDetail,
   DocumentOut,
   DocumentUploadResponse,
+  EvaluationDashboardOut,
+  EvaluationDatasetDetailOut,
+  EvaluationDatasetOut,
+  EvaluationRunOut,
+  EvaluationRunSummaryOut,
   EvidenceOut,
   FactVerificationList,
   FactVerificationOut,
@@ -27,6 +32,8 @@ import type {
   InvestigationOut,
   DemoLoadResponse,
   KnowledgeGraph,
+  LLMSettings,
+  LLMSettingsUpdate,
   Page,
   ReevaluationSummary,
   ReportOut,
@@ -105,6 +112,14 @@ export const api = {
       method: "PUT",
       body: JSON.stringify({ mode }),
     }),
+  llmSettings: () => request<LLMSettings>("/settings/llm"),
+  saveLLMSettings: (payload: LLMSettingsUpdate) =>
+    request<LLMSettings>("/settings/llm", {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    }),
+  clearLLMKey: () =>
+    request<LLMSettings>("/settings/llm/key", { method: "DELETE" }),
 
   // Blackboard
   snapshot: (params: { days?: number } = {}) =>
@@ -409,6 +424,53 @@ export const api = {
     }),
   resetDemo: () =>
     request<{ message: string }>("/demo/reset", { method: "POST" }),
+
+  // Evaluation and performance dashboard
+  evaluationDatasets: () =>
+    request<EvaluationDatasetOut[]>("/evaluation/datasets"),
+  evaluationDataset: (id: number) =>
+    request<EvaluationDatasetDetailOut>(`/evaluation/datasets/${id}`),
+  createEvaluationDataset: (payload: {
+    name: string;
+    kind: "conflict_detection" | "evidence_verification";
+    description?: string;
+    version?: string;
+    cases: Record<string, any>[];
+  }) =>
+    request<EvaluationDatasetDetailOut>("/evaluation/datasets", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  uploadEvaluationDataset: (file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return request<EvaluationDatasetDetailOut>("/evaluation/datasets/upload", {
+      method: "POST",
+      body: form,
+    });
+  },
+  deleteEvaluationDataset: (id: number) =>
+    request<{ message: string }>(`/evaluation/datasets/${id}`, {
+      method: "DELETE",
+    }),
+  runEvaluationDataset: (id: number) =>
+    request<EvaluationRunOut>(`/evaluation/datasets/${id}/run`, {
+      method: "POST",
+    }),
+  evaluationRuns: (
+    params: {
+      dataset_id?: number;
+      kind?: string;
+      status?: string;
+      limit?: number;
+    } = {}
+  ) => request<EvaluationRunSummaryOut[]>(`/evaluation/runs${qs(params)}`),
+  evaluationRun: (id: number) =>
+    request<EvaluationRunOut>(`/evaluation/runs/${id}`),
+  evaluationExportUrl: (id: number, format: "csv" | "pdf") =>
+    `${API_BASE}/evaluation/runs/${id}/export?format=${format}`,
+  evaluationDashboard: () =>
+    request<EvaluationDashboardOut>("/evaluation/dashboard"),
 
   // Search
   search: (q: string) =>

@@ -33,7 +33,7 @@
 20. REST API surface
 21. Frontend application
 22. Testing strategy
-23. Evaluation results
+23. Evaluation & performance dashboard
 24. Run instructions (local)
 25. Docker & deployment
 26. Known limitations
@@ -59,10 +59,11 @@ LLM layer can be enabled at runtime for extra recall and natural-language
 explanations — but the system is correct and complete without it.
 
 The project reached a verified **1.0.0** release state and was then extended with
-a focused upgrade (evidence assessment, richer human review, and dashboard
-analytics, claim-level fact verification, source-credibility analysis and a
-grounded investigation chat). The backend test suite is **245 tests, all
-passing**, and the production frontend build succeeds.
+a focused upgrade (evidence assessment, richer human review, dashboard analytics,
+claim-level fact verification, source-credibility analysis, a grounded
+investigation chat, an AI evaluation & performance dashboard and in-app API-key
+management). The backend test suite is **284 tests, all passing**, and the
+production frontend build succeeds.
 
 ---
 
@@ -505,8 +506,14 @@ user preference (a persisted `reasoning_mode` of `deterministic` or
   are never executed.
 - Optional bearer-token gating on every `/api` route (except health); proven by
   an exhaustive unauthenticated-access test.
-- Secrets are environment-driven only (`API_TOKEN`, `OPENAI_API_KEY`); `.env` and
-  databases are git-ignored; a logging filter redacts every configured secret.
+- Secrets are environment-driven (`API_TOKEN`, `OPENAI_API_KEY`); `.env`,
+  `.env.local` and databases are git-ignored; a logging filter redacts every
+  configured secret.
+- The optional API key can be added from the Settings page; it is written only to
+  `backend/.env.local` (loaded after `.env`, with real environment variables
+  taking precedence), returned only as a boolean plus a masked hint, validated
+  before persistence, and blocked from anonymous writes on a production instance
+  without `API_TOKEN`.
 - Errors never return stack traces or secrets.
 - Configuration is fully environment-driven (database URL, CORS origins, upload
   limit, environment, upload dir, log level/format, docs toggle, trusted hosts,
@@ -555,6 +562,10 @@ Base path `/api`. Highlights:
   `/blackboard/events`, and trace endpoints.
 - Knowledge graph: `GET /knowledge-graph`.
 - Agents: `GET /agents`. Audit: `GET /audit`. Search: `GET /search`.
+- Evaluation: `/evaluation/datasets` (list/create/upload/detail/delete),
+  `POST /evaluation/datasets/{id}/run`, `/evaluation/runs` (list/detail/export),
+  `/evaluation/dashboard`, `/evaluation/analytics/agents`,
+  `/evaluation/analytics/documents`.
 - Demo: `POST /demo/load`, `POST /demo/reset`.
 
 List endpoints return a paginated envelope
@@ -574,6 +585,10 @@ Single-page React application (React Router) with pages for:
 - **Hypotheses**, **Investigations** and the **Investigation workspace** — live
   agent activity, event stream, progress, verification and credibility summaries,
   and the grounded chat assistant.
+- **Evaluation** — performance cards, precision/recall/accuracy/F1 charts,
+  confusion matrices, agent-timing charts, document analytics, labelled test-set
+  management (create/upload/run), a run explorer with per-case pass/fail, and CSV
+  or PDF export.
 - **Knowledge Graph**, **Reports**, **Audit Trail**, **Agents**, **Settings**,
   and document **Browse/Detail**.
 
@@ -584,20 +599,25 @@ authoritative gate.
 
 ## 22. Testing strategy
 
-- **Backend:** **245 tests** in `app/tests/` covering extraction, conflict
+- **Backend:** **284 tests** in `app/tests/` covering extraction, conflict
   detection, all six agents, the scheduler, orchestration, the blackboard, the
   SSE progress stream, hypothesis ranking, the audit trail, human review,
   multi-factor evidence assessment, dashboard snapshot filters/distributions,
   claim-level fact verification, source credibility, the grounded investigation
-  chat, reports, the knowledge graph, the demo scenario, the optional LLM layer
-  (mocked provider), security, settings, and the HTTP API.
+  chat, the evaluation dashboard (seeding, labelled create/upload, real-code runs,
+  recomputed metrics, isolated runs, analytics and exports), reports, the
+  knowledge graph, the demo scenario, the optional LLM layer (mocked provider),
+  in-app API-key management (masking, validation, persistence and the production
+  guard), security, settings, and the HTTP API.
 - **Isolation:** tests use a temporary database and temporary uploads; no network
   or API key is required.
 - **Determinism:** a `run_investigation_sync` fixture runs investigations to
   completion synchronously so agent-output tests do not race the background
   thread.
 - **Frontend:** TypeScript type-check + production build.
-- **Evaluation harness:** a curated labelled dataset measures detection quality.
+- **Evaluation harness:** curated labelled datasets measure conflict-detection and
+  evidence-verification quality, both from the CLI (`evaluation.run_evaluation`)
+  and through the in-app dashboard.
 
 Run the backend suite:
 
@@ -608,7 +628,7 @@ cd neurosync/backend
 
 ---
 
-## 23. Evaluation results
+## 23. Evaluation & performance dashboard
 
 Deterministic mode, LLM disabled, isolated temporary database. **Conflict
 detection** (positive class = confirmed contradiction; 32 examples):
@@ -623,6 +643,11 @@ detection** (positive class = confirmed contradiction; 32 examples):
 | Accuracy | 0.9062 |
 | Confusion | TP=10, FP=1, FN=2, TN=19 |
 
+**Evidence verification** (9 labelled claim/document cases, four production
+verdicts): accuracy **1.0000 (9/9)**, macro precision/recall/F1 **1.0000**.
+Per-class recall: `supported` 1.0000 (3/3), `contradicted` 1.0000 (2/2),
+`partially_supported` 1.0000 (1/1), `unverified` 1.0000 (3/3).
+
 **Evidence sufficiency** (6 scenarios): status accuracy **1.0000 (6/6)**,
 partition traceability **1.0000**. **Conclusion traceability** (demo
 investigation): **7/7 fully traceable (rate 1.0000)**.
@@ -631,6 +656,36 @@ Known failure cases (3, retained deliberately, all `lexical_variation_and_negati
 `lex_subject_synonym_temp` and `lex_state_synonym_running` (false negatives) and
 `lex_negation_scope_false_positive` (false positive). These are documented
 limitations of the deterministic detector, not hidden.
+
+### In-app dashboard
+
+The **Evaluation** page exposes the same measurements without the CLI:
+
+- **Datasets.** Two built-in reference benchmarks are seeded idempotently
+  (`builtin:conflict-detection`, 32 cases; `builtin:evidence-verification`,
+  9 cases). User test sets can be created in the UI or uploaded as JSON. Built-ins
+  are read-only and identified as `reference_labelled`; user sets are
+  `user_labelled`. Only labelled cases are ever scored.
+- **Runs.** A run executes `document_service.extract_document_content`,
+  `conflict_service.detect_conflicts` and `fact_verification_service.verify_claim`
+  in a throwaway **in-memory** SQLite database, then persists only run metadata and
+  per-case expected/predicted outcomes. Runs never create real documents, uploads
+  or blackboard records, and every headline metric is recomputed from the
+  persisted case results rather than being entered or stored by hand.
+- **Visuals.** Performance cards, precision/recall/accuracy/F1 bars, binary and
+  multi-class confusion matrices, per-agent task volume and average duration, and
+  document-processing/claim/conflict/investigation analytics. Missing denominators
+  render as `n/a`, never `0`.
+- **Test-case detail.** Each case shows its expected label, the system prediction,
+  pass/fail, duration and explanation; failures are listed separately.
+- **Exports.** Completed runs export as CSV or PDF containing dataset identity,
+  provenance, metrics, confusion data, failures and every per-case result. Failed
+  runs have no valid metrics and return `409`.
+
+Built-in reference benchmarks are curated, human-labelled fixtures, not
+independently audited field trials; the UI states this explicitly and separates
+them from user-labelled results. Unlabelled demonstration records are never
+included in any score.
 
 ---
 
@@ -769,9 +824,10 @@ TypeScript, Vite and Tailwind on the frontend; SSE for realtime; pytest for test
 Docker/Caddy for production.
 
 **Q10. How do you know it works?**
-A 245-test automated suite, a green production build, a labelled evaluation
-harness with reproducible metrics, an end-to-end smoke test, and a documented
-release verification. Nothing is asserted without a measurement.
+A 284-test automated suite, a green production build, a labelled evaluation
+harness with reproducible metrics (conflict detection and evidence verification),
+an end-to-end smoke test, and a documented release verification. Nothing is
+asserted without a measurement.
 
 **Q11. How do I run it?**
 Two terminals: run the FastAPI backend with `uvicorn app.main:app --reload
@@ -818,8 +874,11 @@ marked as demonstration data.
 **Q19. What was added in the latest upgrade?**
 Multi-factor evidence assessment, review decisions `inconclusive`/`reopen`,
 dashboard filters/distributions with deep links, claim-level fact verification,
-source-credibility analysis, a grounded investigation chat, and the requested
-documentation set — all verified (245 tests passing; smoke test green).
+source-credibility analysis, a grounded investigation chat, an evaluation &
+performance dashboard with labelled test-set management and CSV/PDF export, in-app
+API-key management for the optional OpenAI-compatible provider, and
+the requested documentation set — all verified (284 tests passing; smoke test
+green).
 
 **Q20. What would you build next?**
 A synonym/ontology layer for deterministic recall, a persistent incremental graph

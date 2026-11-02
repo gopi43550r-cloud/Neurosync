@@ -20,6 +20,9 @@ Errors return `{ "detail": "...", "code": "..." }`.
 | GET    | `/api/config`  | Public configuration: mode, upload limit, weights. |
 | GET    | `/api/settings/reasoning` | Current reasoning-mode preference and effective mode. |
 | PUT    | `/api/settings/reasoning` | Set the reasoning mode (`deterministic` \| `ai_assisted`). |
+| GET    | `/api/settings/llm` | Provider status (never includes the key). |
+| PUT    | `/api/settings/llm` | Save the API key / model / base URL and apply immediately. |
+| DELETE | `/api/settings/llm/key` | Remove the key saved by the app. |
 
 `GET /api/health` includes `reasoning_mode` (the stored preference) and
 `effective_mode` (what is actually running — degrades to `deterministic` when no
@@ -48,6 +51,56 @@ Request body: `{ "mode": "deterministic" | "ai_assisted" }`. The preference is a
 global, persisted setting. Selecting `ai_assisted` without a configured provider
 is accepted but `effective_mode` stays `deterministic` and `note` explains why.
 Per-investigation `enable_llm` is ANDed with the global mode as an opt-out.
+
+### LLM / API-key settings
+
+`GET /api/settings/llm` reports provider state **without ever returning the key**:
+
+```json
+{
+  "configured": true,
+  "active": true,
+  "source": "saved",
+  "key_hint": "••••cdef",
+  "model": "gpt-4o-mini",
+  "base_url": "https://api.openai.com/v1",
+  "provider": "openai",
+  "enable_llm": true,
+  "reasoning_mode": "ai_assisted",
+  "effective_mode": "ai_assisted",
+  "storage": ".env.local",
+  "note": "AI assistance is active; model output is validated against the documents."
+}
+```
+
+`source` is `environment` (process env or `backend/.env`), `saved` (written by
+this endpoint) or `none`. `key_hint` is the last four characters, never the key.
+
+`PUT /api/settings/llm` accepts:
+
+```json
+{
+  "api_key": "sk-...",
+  "model": "gpt-4o-mini",
+  "base_url": "https://api.openai.com/v1",
+  "enable_llm": true
+}
+```
+
+- `api_key` is optional after the first save; omit or send `""` to keep the
+  existing key. On the first configuration a key is required.
+- Values are validated before they reach disk: keys must be 8–512 URL-safe
+  characters, and the base URL must be an `http(s)` URL without embedded
+  credentials, query string or fragment.
+- The key is persisted to `backend/.env.local` (git-ignored, `0600` where the OS
+  supports it) and applied to the running process immediately. Real environment
+  variables still take precedence after a restart.
+- `DELETE /api/settings/llm/key` clears the stored key and disables LLM
+  assistance. A key supplied by the environment returns after a restart.
+
+Writes are **blocked with `403`** when `ENVIRONMENT=production` and `API_TOKEN`
+is empty, since the API would otherwise expose anonymous credential replacement.
+Reads remain available. Errors return `422` with a human-readable `detail`.
 
 ---
 
@@ -504,6 +557,70 @@ Guarantees:
 Export: `GET /api/investigations/{id}/report/export?format=markdown|json|pdf`.
 The PDF is rendered with PyMuPDF (already a dependency) and returned as
 `application/pdf` with an attachment filename.
+
+---
+
+## Evaluation & performance
+
+The evaluation API stores human-labelled test cases and the **raw per-case
+outcomes** of each run. Metrics are always recomputed from those persisted rows;
+no endpoint accepts a pre-computed score. A detected conflict is only counted
+correct when a ground-truth label says so.
+
+| Method | Path | Description |
+| ------ | ---- | ----------- |
+| GET    | `/api/evaluation/datasets` | List built-in reference benchmarks and user-labelled test sets. |
+| POST   | `/api/evaluation/datasets` | Create a labelled test set (JSON body). |
+| POST   | `/api/evaluation/datasets/upload` | Upload the same JSON shape as a file (multipart `file`, max 5 MB). |
+| GET    | `/api/evaluation/datasets/{id}` | Dataset detail with every labelled case and its ground truth. |
+| DELETE | `/api/evaluation/datasets/{id}` | Delete a **user** test set and its runs (built-ins return `400`). |
+| POST   | `/api/evaluation/datasets/{id}/run` | Execute the dataset through the production pipeline and persist every outcome. |
+| GET    | `/api/evaluation/runs` | Run history. Filters: `dataset_id`, `kind`, `status`, `limit`. |
+| GET    | `/api/evaluation/runs/{id}` | Full run: metrics, confusion data, failures and per-case results. |
+| GET    | `/api/evaluation/runs/{id}/export?format=csv\|pdf` | Export a **completed** run (failed runs return `409`). |
+| GET    | `/api/evaluation/dashboard` | Headline runs, datasets, live agent performance and document analytics. |
+| GET    | `/api/evaluation/analytics/agents` | Agent execution statistics only. |
+| GET    | `/api/evaluation/analytics/documents` | Document/investigation analytics only. |
+
+Create/upload body. `kind` selects the evaluation type. Conflict cases supply
+`text_a`/`text_b`; evidence-verification cases supply `claim_text` plus one or
+more comparison `documents`. `expected` is mandatory human ground truth.
+
+```json
+{
+  "name": "Temperature checks",
+  "kind": "conflict_detection",
+  "version": "1.0.0",
+  "cases": [
+    {
+      "case_key": "units-temp",
+      "category": "units",
+      "text_a": "The temperature was 100°F at 10:00 AM.",
+      "text_b": "The temperature was 40°C at 10:00 AM.",
+      "expected": {
+        "label": true,
+        "expected_flagged": true,
+        "expected_types": ["numerical_disagreement"]
+      },
+      "rationale": "100°F is 37.8°C, beyond the comparison tolerance."
+    }
+  ]
+}
+```
+
+Evidence case expectation: `{"verdict": "supported" | "contradicted" | "partially_supported" | "unverified"}`.
+
+Run `metrics` are kind-specific:
+
+* `conflict_detection`: `{ "overall": { "counts": {"tp","fp","fn","tn"}, "precision", "recall", "f1", "accuracy", "false_positive_rate", "false_negative_rate", ... }, "signals": {...}, "dataset": {...} }`.
+* `evidence_verification`: `{ "overall": { "labels", "total", "correct", "accuracy", "macro_precision", "macro_recall", "macro_f1", "per_class", "confusion" }, "dataset": {...} }`.
+
+Undefined rates are `null` (rendered `n/a`), never `0`. `provenance` is
+`reference_labelled` for shipped benchmarks and `user_labelled` for created or
+uploaded test sets. Reference benchmarks are curated fixtures, not independently
+audited field trials. Evaluation documents are materialised only in a throwaway
+in-memory database, so runs never touch real documents, uploads or blackboard
+records.
 
 ---
 

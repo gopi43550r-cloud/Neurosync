@@ -23,6 +23,7 @@ from .api import (
     demo,
     documents,
     evidence,
+    evaluation,
     graph,
     health,
     hypotheses,
@@ -35,6 +36,7 @@ from .api import (
 from .config import settings
 from .database import init_db
 from .logging_config import configure_logging
+from .services import evaluation_service
 
 configure_logging(
     level=settings.log_level,
@@ -47,6 +49,13 @@ logger = logging.getLogger("neurosync")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    # Seed the shipped, human-labelled evaluation benchmarks exactly once so a
+    # fresh installation can produce validated metrics immediately. This is
+    # idempotent and never touches documents, uploads or the blackboard.
+    from .database import SessionLocal
+
+    with SessionLocal() as session:
+        evaluation_service.ensure_builtin_datasets(session)
     logger.info(
         "NeuroSync started (mode=%s, environment=%s)",
         "ai" if settings.llm_configured else "demonstration",
@@ -182,6 +191,7 @@ app.include_router(search.router, prefix=API)
 app.include_router(audit.router, prefix=API)
 app.include_router(reviews.router, prefix=API)
 app.include_router(settings_api.router, prefix=API)
+app.include_router(evaluation.router, prefix=API)
 app.include_router(demo.router, prefix=API)
 
 

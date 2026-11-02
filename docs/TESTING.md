@@ -34,7 +34,7 @@ Run a single file or test:
 .\venv\Scripts\python.exe -m pytest app\tests\test_api.py::test_health -q
 ```
 
-The current suite is **245 tests** and completes in roughly two minutes.
+The current suite is **284 tests** and completes in roughly four minutes.
 
 ---
 
@@ -64,6 +64,8 @@ Tests live in `backend/app/tests/`. Each file targets one subsystem:
 | `test_fact_verification.py` | Claim-level fact verification with grounded citations. |
 | `test_source_credibility.py` | Source-credibility analyzer factors and aggregation. |
 | `test_chat_assistant.py` | Grounded investigation chat: scoping, citations and explicit uncertainty. |
+| `test_llm_settings.py` | In-app API-key management: masking, persistence, validation, production guard and immediate activation. |
+| `test_evaluation_dashboard.py` | Evaluation seeding, labelled test-set create/upload, real-code runs, recomputed metrics, dashboard analytics, CSV/PDF exports and validation errors. |
 | `test_llm_service.py` / `test_llm_validation.py` / `test_llm_end_to_end.py` | The optional LLM layer: provider interface, grounding/validation and AI-assisted flows (no live calls). |
 | `test_security.py` | Security regressions (upload/validation/path safety). |
 
@@ -108,8 +110,8 @@ contract tests.
 
 ## 6. Evaluation harness
 
-The evaluation harness measures conflict-detection quality against a labelled
-set. From `backend/`:
+The evaluation harness measures conflict-detection quality, evidence
+verification and traceability against labelled sets. From `backend/`:
 
 ```powershell
 .\venv\Scripts\python.exe -m evaluation.run_evaluation
@@ -119,6 +121,25 @@ It uses a throwaway database and upload directory and is fully deterministic
 (LLM off). Results are written to `evaluation/results/` as `summary.json` and
 `summary.md`. See `evaluation/README.md` for the metric definitions and the
 documented known failures.
+
+The same labelled datasets are exercised through the app in
+`test_evaluation_dashboard.py`, which covers:
+
+- idempotent seeding of `builtin:conflict-detection` (32 cases) and
+  `builtin:evidence-verification` (9 cases);
+- creating and uploading user-labelled test sets;
+- executing both kinds through the **real** extraction, conflict-detection and
+  fact-verification code in an isolated in-memory database;
+- verifying headline metrics are recomputed from persisted per-case results
+  (including the documented TP=10/FP=1/FN=2/TN=19 conflict benchmark);
+- dashboard aggregation of agent and document statistics;
+- CSV and PDF export content, and 409 handling for failed runs;
+- validation errors, cascade deletion and the no-pollution guarantee (runs never
+  create real `Document` rows).
+
+Because evaluation runs execute production code, this module is intentionally
+slower than the pure unit tests; it still uses the shared test database and needs
+no network or API key.
 
 ---
 
