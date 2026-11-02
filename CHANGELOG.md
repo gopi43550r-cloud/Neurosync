@@ -32,6 +32,15 @@ The version is declared in three places and they must stay in step:
   scored as zero; no credentials are inferred from filenames or text
   (`services/source_credibility_service.py`, `/api/source-credibility`).
   Integrated into Documents, Evidence and Investigations.
+- **Grounded investigation chat** — deterministic, investigation-scoped Q&A
+  answering why a conflict was detected, which document supports a claim, what
+  evidence contradicts a hypothesis, why the investigation is inconclusive and
+  what additional evidence is required. Every answer uses only stored Blackboard
+  rows, attaches numbered citations to documents (with page or character
+  location), explicitly states when information is insufficient and refuses to
+  answer from other investigations (`services/chat_assistant_service.py`,
+  `/api/investigations/{id}/chat`, `/api/investigations/{id}/chat/suggestions`).
+  Integrated into the investigation workspace.
 - **Multi-factor evidence assessment** — every evidence item now carries an
   inspectable `assessment` object (relevance, provenance, recency, completeness,
   corroboration, contradictory-evidence penalty) with per-factor labels,
@@ -60,9 +69,9 @@ The version is declared in three places and they must stay in step:
 ### Tests
 
 - Added `test_fact_verification.py`, `test_source_credibility.py`,
-  `test_evidence_assessment.py`, `test_dashboard_snapshot.py` and new
-  review-decision cases in `test_audit_review_ranking.py`. Backend suite: **234
-  tests passing**.
+  `test_evidence_assessment.py`, `test_dashboard_snapshot.py`,
+  `test_chat_assistant.py` and new review-decision cases in
+  `test_audit_review_ranking.py`. Backend suite: **245 tests passing**.
 
 ---
 

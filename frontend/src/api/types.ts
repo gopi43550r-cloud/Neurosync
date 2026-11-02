@@ -1033,3 +1033,42 @@ export interface SourceCredibilityList {
   methodology: string;
   caveat: string;
 }
+
+// ------------------------------------------------------- Investigation chat
+export interface ChatCitation {
+  number: number;
+  kind: string;
+  record_id: number | null;
+  label: string;
+  document_id: number | null;
+  document_filename: string | null;
+  page: number | null;
+  char_start: number | null;
+  char_end: number | null;
+  text_location: string;
+  snippet: string;
+  link: string | null;
+}
+
+export interface ChatAnswer {
+  investigation_id: number;
+  investigation_name: string;
+  question: string;
+  intent: string;
+  answer: string;
+  insufficient_information: boolean;
+  missing_information: string[];
+  citations: ChatCitation[];
+  follow_up_questions: string[];
+  data_sources: Record<string, number>;
+  methodology: string;
+  caveat: string;
+  analyzed_at: string;
+}
+
+export interface ChatSuggestions {
+  investigation_id: number;
+  investigation_name: string;
+  suggestions: string[];
+  note: string;
+}

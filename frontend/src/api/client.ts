@@ -18,6 +18,8 @@ import type {
   FactVerificationSummary,
   SourceCredibilityList,
   SourceCredibilityOut,
+  ChatAnswer,
+  ChatSuggestions,
   HealthInfo,
   HumanReviewOut,
   HypothesisOut,
@@ -243,6 +245,26 @@ export const api = {
   ) =>
     request<SourceCredibilityList>(
       `/investigations/${investigationId}/source-credibility${qs(params)}`
+    ),
+
+  // Investigation chat (grounded in this investigation's stored records)
+  investigationChat: (
+    investigationId: number,
+    payload: {
+      question: string;
+      conflict_id?: number;
+      claim_id?: number;
+      hypothesis_id?: number;
+      document_id?: number;
+    }
+  ) =>
+    request<ChatAnswer>(`/investigations/${investigationId}/chat`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
+  investigationChatSuggestions: (investigationId: number) =>
+    request<ChatSuggestions>(
+      `/investigations/${investigationId}/chat/suggestions`
     ),
 
   // Conflicts

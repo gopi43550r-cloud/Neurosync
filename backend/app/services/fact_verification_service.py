@@ -333,6 +333,119 @@ class VerificationIndex:
         return self._sentence_index[document_id]
 
 
+def build_scoped_index(
+    db: Session,
+    *,
+    document_ids: Iterable[int] | None = None,
+    conflict_ids: Iterable[int] | None = None,
+) -> VerificationIndex:
+    """Build an index limited to one investigation's documents and conflicts.
+
+    Claims referenced by an in-scope conflict are always included (with their
+    source document) so that the investigation's own conflicts remain
+    explainable. Nothing outside those sets is loaded, which means verification
+    performed with this index cannot cite another investigation's material.
+    """
+    doc_ids = {int(value) for value in (document_ids or []) if value is not None}
+    conf_ids = {int(value) for value in (conflict_ids or []) if value is not None}
+
+    conflicts: list[Conflict] = []
+    if conf_ids:
+        conflicts = list(
+            db.execute(select(Conflict).where(Conflict.id.in_(conf_ids))).scalars()
+        )
+
+    conflict_claim_ids: set[int] = set()
+    claim_to_conflicts: dict[int, set[int]] = defaultdict(set)
+    for conflict in conflicts:
+        for claim_id in (conflict.claim_a_id, conflict.claim_b_id):
+            if claim_id:
+                conflict_claim_ids.add(claim_id)
+                claim_to_conflicts[claim_id].add(conflict.id)
+
+    conditions = []
+    if doc_ids:
+        conditions.append(Claim.document_id.in_(doc_ids))
+    if conflict_claim_ids:
+        conditions.append(Claim.id.in_(conflict_claim_ids))
+    if not conditions:
+        return VerificationIndex(
+            claims=[],
+            docs={},
+            contents={},
+            page_maps={},
+            claim_to_conflicts={},
+            evidence_by_claim={},
+            evidence_by_conflict={},
+            document_count=0,
+        )
+
+    claims = list(
+        db.execute(
+            select(Claim).where(or_(*conditions)).order_by(Claim.id)
+        ).scalars()
+    )
+    scoped_doc_ids = doc_ids | {claim.document_id for claim in claims if claim.document_id}
+    docs = (
+        {
+            doc.id: doc
+            for doc in db.execute(
+                select(Document).where(Document.id.in_(scoped_doc_ids))
+            ).scalars()
+        }
+        if scoped_doc_ids
+        else {}
+    )
+    contents = (
+        {
+            content.document_id: content
+            for content in db.execute(
+                select(DocumentContent).where(
+                    DocumentContent.document_id.in_(scoped_doc_ids)
+                )
+            ).scalars()
+        }
+        if scoped_doc_ids
+        else {}
+    )
+    page_maps: dict[int, list[dict]] = {}
+    for document_id, content in contents.items():
+        try:
+            parsed = json.loads(content.page_map or "[]")
+        except (TypeError, json.JSONDecodeError):
+            parsed = []
+        page_maps[document_id] = parsed if isinstance(parsed, list) else []
+
+    evidence_by_claim: dict[int, list[Evidence]] = defaultdict(list)
+    evidence_by_conflict: dict[int, list[Evidence]] = defaultdict(list)
+    if conf_ids:
+        for evidence in db.execute(
+            select(Evidence).where(Evidence.conflict_id.in_(conf_ids)).order_by(Evidence.id)
+        ).scalars():
+            evidence_by_conflict[evidence.conflict_id].append(evidence)
+            if evidence.claim_id:
+                evidence_by_claim[evidence.claim_id].append(evidence)
+
+    index = VerificationIndex(
+        claims=claims,
+        docs=docs,
+        contents=contents,
+        page_maps=page_maps,
+        claim_to_conflicts=dict(claim_to_conflicts),
+        evidence_by_claim=dict(evidence_by_claim),
+        evidence_by_conflict=dict(evidence_by_conflict),
+        document_count=sum(
+            1 for content in contents.values() if (content.text or "").strip()
+        ),
+    )
+    for claim in claims:
+        if claim.subject:
+            index.claims_by_key.setdefault(
+                (_norm(claim.subject), _prop(claim)), []
+            ).append(claim)
+    return index
+
+
 def build_index(db: Session) -> VerificationIndex:
     claims = list(db.execute(select(Claim).order_by(Claim.id)).scalars())
     docs = {doc.id: doc for doc in db.execute(select(Document)).scalars()}
@@ -451,6 +564,32 @@ def _evidence_source(index: VerificationIndex, evidence: Evidence) -> dict:
         "snippet": snippet[:500],
         "link": None,
     }
+
+
+# ------------------------------------------------------- public citation API
+def source_for_document(
+    index: VerificationIndex,
+    document_id: int | None,
+    snippet: str,
+    start: int | None = None,
+    end: int | None = None,
+) -> dict:
+    """Resolve a document citation (filename, page or character range, snippet).
+
+    Public wrapper used by the investigation chat assistant so both features
+    produce identical, verifiable source references.
+    """
+    return _source_for_document(index, document_id, snippet, start, end)
+
+
+def claim_source(index: VerificationIndex, claim: Claim) -> dict:
+    """Resolve the source document/location for a stored claim."""
+    return _claim_source(index, claim)
+
+
+def evidence_source(index: VerificationIndex, evidence: Evidence) -> dict:
+    """Resolve the source document/location for a stored evidence row."""
+    return _evidence_source(index, evidence)
 
 
 # ---------------------------------------------------------------- comparison

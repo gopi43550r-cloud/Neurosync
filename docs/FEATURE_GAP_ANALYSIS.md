@@ -223,7 +223,9 @@ invalid IDs, error handling, graph, security.
 Coverage for the gaps above has now been **added**: `test_evidence_assessment.py`
 (multi-factor assessment), `test_dashboard_snapshot.py` (counts, `days` window,
 distributions) and new review-decision cases in `test_audit_review_ranking.py`
-(`inconclusive`, `reopen`, `review_kind`). Backend suite: **234 tests passing**.
+(`inconclusive`, `reopen`, `review_kind`), plus `test_fact_verification.py`,
+`test_source_credibility.py` and `test_chat_assistant.py`. Backend suite:
+**245 tests passing**.
 
 ---
 

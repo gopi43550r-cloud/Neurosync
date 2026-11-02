@@ -16,6 +16,7 @@ from .api import (
     agents,
     audit,
     blackboard,
+    chat,
     claims,
     conflicts,
     credibility,
@@ -173,6 +174,7 @@ app.include_router(hypotheses.router, prefix=API)
 app.include_router(investigations.router, prefix=API)
 app.include_router(verification.router, prefix=API)
 app.include_router(credibility.router, prefix=API)
+app.include_router(chat.router, prefix=API)
 app.include_router(blackboard.router, prefix=API)
 app.include_router(graph.router, prefix=API)
 app.include_router(agents.router, prefix=API)

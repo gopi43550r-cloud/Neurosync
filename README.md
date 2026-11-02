@@ -61,6 +61,12 @@ and traceable.
   consistency with other sources) assessed on read from stored records. Unknown
   inputs are excluded and reported instead of being scored as zero, and credentials
   are never inferred. Integrated into Documents, Evidence and Investigations.
+- **Grounded investigation chat** — ask why a conflict was detected, which
+  document supports a claim, what contradicts a hypothesis, why an investigation
+  is inconclusive, or what evidence is still required. The assistant is
+  deterministic and scoped to one investigation's Blackboard records; every answer
+  carries numbered citations to stored documents (with page or character location)
+  and says explicitly when the records cannot answer.
 - **Uncertainty handling** — missing evidence and informational gaps are surfaced
   explicitly rather than hidden behind a single confidence number.
 - **Real-time experience** — investigations stream server-sent events; the UI
@@ -160,10 +166,11 @@ cd neurosync/backend
 
 The suite covers extraction, conflict detection, agent behaviour, the scheduler,
 the blackboard, hypothesis ranking, the audit trail, human review, claim-level
-fact verification, the source-credibility analyzer, the optional
-LLM layer (parsing, retries, grounding/citation validation and prompt-injection
-hardening — all with a mocked provider, so no API key or network is needed), the
-demonstration scenario, the full HTTP API, and the evaluation harness.
+fact verification, the source-credibility analyzer, the grounded investigation
+chat, the optional LLM layer (parsing, retries, grounding/citation validation and
+prompt-injection hardening — all with a mocked provider, so no API key or network
+is needed), the demonstration scenario, the full HTTP API, and the evaluation
+harness.
 
 ### Running the evaluation
 

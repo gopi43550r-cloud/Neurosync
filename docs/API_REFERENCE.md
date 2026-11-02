@@ -248,6 +248,73 @@ explicit caveat. `unknown_only=true` returns sources whose identity is unknown
 
 ---
 
+## Investigation chat
+
+A deterministic question-answering layer over one investigation's stored rows
+(documents, claims, conflicts, evidence, hypotheses and conclusions). It is not
+a language model: every sentence is assembled from a stored field, so it cannot
+produce an unsupported answer. No record from another investigation is ever
+consulted.
+
+| Method | Path                                             | Description                                         |
+| ------ | ------------------------------------------------ | --------------------------------------------------- |
+| POST   | `/api/investigations/{id}/chat`                  | Ask one question about the investigation.           |
+| GET    | `/api/investigations/{id}/chat/suggestions`      | Example questions the current records can answer.   |
+
+**Request body**
+
+```json
+{
+  "question": "Which document supports this claim?",
+  "claim_id": 4
+}
+```
+
+`question` is required (1–2000 characters, trimmed). The optional `conflict_id`,
+`claim_id`, `hypothesis_id` and `document_id` fields disambiguate words like
+"this conflict" or "this claim". They only select a record that is already linked
+to the investigation; an id from another investigation is rejected with a plain
+message rather than answered.
+
+**Response**
+
+`ChatAnswerOut` includes:
+
+| Field | Meaning |
+| ----- | ------- |
+| `intent` | Detected question type: `conflict_detected`, `claim_support`, `hypothesis_contradiction`, `investigation_inconclusive`, `missing_evidence`, `summary`, `document_lookup` or `record_search`. |
+| `answer` | The storable assembled text, with `[n]` markers matching `citations[].number`. |
+| `insufficient_information` | `true` when the stored records cannot fully answer. |
+| `missing_information` | The specific gaps, quoted from stored `missing_information`/`unresolved_questions` fields or the verifier. |
+| `citations` | Numbered references: `kind`, `record_id`, `label`, `document_id`, `document_filename`, `page`, `char_start`, `char_end`, `text_location`, `snippet`, `link`. |
+| `follow_up_questions` | Questions that the current records can answer. |
+| `data_sources` | Row counts the answer drew on. |
+| `methodology`, `caveat`, `analyzed_at` | How the answer was built and its limits. |
+
+The five supported question shapes are:
+
+- **Why was this conflict detected?** — quotes the stored conflict type, severity,
+  detector explanation, detection metadata, both compared claims and any attached
+  evidence rows.
+- **Which document supports this claim?** — runs the fact verifier for the claim
+  and distinguishes independent corroboration from same-source restatements;
+  reports contradicting sources too.
+- **What evidence contradicts this hypothesis?** — lists the stored evidence rows
+  linked to the hypothesis and its recorded assumptions and missing information.
+- **Why is the investigation inconclusive?** — quotes the latest conclusion's
+  `decision_type`, text, unresolved questions and limitations.
+- **What additional evidence is required?** — collects recorded gaps from
+  hypotheses, conclusions, missing evidence rows, conflicts without evidence and
+  the verifier's per-claim `missing_information`.
+
+Every factual answer cites at least one stored record. If no record can support
+an answer, the response sets `insufficient_information: true` and says so instead
+of guessing. Answers resolve citations to a document and page or character
+location through the same helpers as fact verification, so links open
+`/documents/{id}`.
+
+---
+
 ## Hypotheses
 
 | Method | Path                                | Description                                  |

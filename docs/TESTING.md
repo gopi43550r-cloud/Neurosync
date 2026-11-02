@@ -34,7 +34,7 @@ Run a single file or test:
 .\venv\Scripts\python.exe -m pytest app\tests\test_api.py::test_health -q
 ```
 
-The current suite is **234 tests** and completes in roughly two minutes.
+The current suite is **245 tests** and completes in roughly two minutes.
 
 ---
 
@@ -61,6 +61,9 @@ Tests live in `backend/app/tests/`. Each file targets one subsystem:
 | `test_intelligence.py` | Derived intelligence records. |
 | `test_demo_scenario.py` | The labelled demo scenario. |
 | `test_settings_api.py` | Reasoning-mode preference and effective mode. |
+| `test_fact_verification.py` | Claim-level fact verification with grounded citations. |
+| `test_source_credibility.py` | Source-credibility analyzer factors and aggregation. |
+| `test_chat_assistant.py` | Grounded investigation chat: scoping, citations and explicit uncertainty. |
 | `test_llm_service.py` / `test_llm_validation.py` / `test_llm_end_to_end.py` | The optional LLM layer: provider interface, grounding/validation and AI-assisted flows (no live calls). |
 | `test_security.py` | Security regressions (upload/validation/path safety). |
 

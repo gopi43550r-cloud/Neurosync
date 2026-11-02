@@ -29,6 +29,7 @@ import {
 import { Badge, InvestigationStatusBadge } from "../components/badges";
 import { InvestigationVerificationSummary } from "../components/ClaimVerification";
 import { InvestigationCredibilitySummary } from "../components/SourceCredibility";
+import { InvestigationChatPanel } from "../components/InvestigationChat";
 import { cn, relativeTime, titleCase } from "../lib/format";
 import type { InvestigationEvent } from "../api/types";
 
@@ -186,6 +187,8 @@ export default function InvestigationWorkspace() {
       <InvestigationVerificationSummary investigationId={data.id} />
 
       <InvestigationCredibilitySummary investigationId={data.id} />
+
+      <InvestigationChatPanel investigationId={data.id} />
 
       <Card>
         <div className="mb-3 flex items-center justify-between">

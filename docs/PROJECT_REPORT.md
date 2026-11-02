@@ -60,8 +60,9 @@ explanations — but the system is correct and complete without it.
 
 The project reached a verified **1.0.0** release state and was then extended with
 a focused upgrade (evidence assessment, richer human review, and dashboard
-analytics). The backend test suite is **234 tests, all passing**, and the
-production frontend build succeeds.
+analytics, claim-level fact verification, source-credibility analysis and a
+grounded investigation chat). The backend test suite is **245 tests, all
+passing**, and the production frontend build succeeds.
 
 ---
 
@@ -544,7 +545,12 @@ Base path `/api`. Highlights:
 - Reviews: `POST /conclusions/{id}/review`, `GET /conclusions/{id}/reviews`,
   `GET /conflicts/{id}/reviews`, `GET /reviews`.
 - Investigations: create/list/get/update, `start`, `pause`, `resume`, `cancel`,
-  `activity`, `report`, `report/export`, and the `events` SSE stream.
+  `activity`, `report`, `report/export`, the `events` SSE stream, and the grounded
+  `chat` / `chat/suggestions` endpoints.
+- Verification: `GET /claims/{id}/verification`, `GET /verification/claims`,
+  `GET /verification/summary`, `GET /investigations/{id}/claim-verifications`.
+- Source credibility: `GET /documents/{id}/credibility`, `GET /source-credibility`,
+  `GET /investigations/{id}/source-credibility`.
 - Blackboard: `GET /blackboard`, `GET /blackboard/snapshot` (with `days`),
   `/blackboard/events`, and trace endpoints.
 - Knowledge graph: `GET /knowledge-graph`.
@@ -566,7 +572,8 @@ Single-page React application (React Router) with pages for:
 - **Evidence** — global evidence list with provenance and the new assessment
   panel.
 - **Hypotheses**, **Investigations** and the **Investigation workspace** — live
-  agent activity, event stream, progress.
+  agent activity, event stream, progress, verification and credibility summaries,
+  and the grounded chat assistant.
 - **Knowledge Graph**, **Reports**, **Audit Trail**, **Agents**, **Settings**,
   and document **Browse/Detail**.
 
@@ -577,12 +584,13 @@ authoritative gate.
 
 ## 22. Testing strategy
 
-- **Backend:** **234 tests** in `app/tests/` covering extraction, conflict
+- **Backend:** **245 tests** in `app/tests/` covering extraction, conflict
   detection, all six agents, the scheduler, orchestration, the blackboard, the
   SSE progress stream, hypothesis ranking, the audit trail, human review,
   multi-factor evidence assessment, dashboard snapshot filters/distributions,
-  reports, the knowledge graph, the demo scenario, the optional LLM layer (mocked
-  provider), security, settings, and the HTTP API.
+  claim-level fact verification, source credibility, the grounded investigation
+  chat, reports, the knowledge graph, the demo scenario, the optional LLM layer
+  (mocked provider), security, settings, and the HTTP API.
 - **Isolation:** tests use a temporary database and temporary uploads; no network
   or API key is required.
 - **Determinism:** a `run_investigation_sync` fixture runs investigations to
@@ -761,7 +769,7 @@ TypeScript, Vite and Tailwind on the frontend; SSE for realtime; pytest for test
 Docker/Caddy for production.
 
 **Q10. How do you know it works?**
-A 234-test automated suite, a green production build, a labelled evaluation
+A 245-test automated suite, a green production build, a labelled evaluation
 harness with reproducible metrics, an end-to-end smoke test, and a documented
 release verification. Nothing is asserted without a measurement.
 
@@ -809,8 +817,9 @@ marked as demonstration data.
 
 **Q19. What was added in the latest upgrade?**
 Multi-factor evidence assessment, review decisions `inconclusive`/`reopen`,
-dashboard filters/distributions with deep links, and the requested documentation
-set — all verified (234 tests passing; smoke test green).
+dashboard filters/distributions with deep links, claim-level fact verification,
+source-credibility analysis, a grounded investigation chat, and the requested
+documentation set — all verified (245 tests passing; smoke test green).
 
 **Q20. What would you build next?**
 A synonym/ontology layer for deterministic recall, a persistent incremental graph
