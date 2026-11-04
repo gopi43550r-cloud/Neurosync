@@ -1,16 +1,5 @@
-import { useEffect, useState, type FormEvent } from "react";
-import {
-  Cpu,
-  Database,
-  Eye,
-  EyeOff,
-  Info,
-  KeyRound,
-  RotateCcw,
-  Settings2,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { useState } from "react";
+import { Cpu, Database, Info, RotateCcw, Settings2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import { useApi } from "../hooks/useApi";
@@ -25,19 +14,7 @@ export default function Settings() {
   const health = useApi(() => api.health(), []);
   const config = useApi(() => api.config(), []);
   const reasoning = useApi(() => api.reasoningSettings(), []);
-  const llm = useApi(() => api.llmSettings(), []);
   const [switching, setSwitching] = useState(false);
-  const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState("");
-  const [baseUrl, setBaseUrl] = useState("");
-  const [showKey, setShowKey] = useState(false);
-  const [savingKey, setSavingKey] = useState(false);
-
-  useEffect(() => {
-    if (!llm.data) return;
-    setModel(llm.data.model ?? "");
-    setBaseUrl(llm.data.base_url ?? "");
-  }, [llm.data]);
 
   if (health.loading && !health.data) return <Loading />;
   if (health.error) return <ErrorState message={health.error} onRetry={health.refetch} />;
@@ -84,56 +61,6 @@ export default function Settings() {
       config.refetch();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed");
-    }
-  };
-
-  const saveKey = async (event: FormEvent) => {
-    event.preventDefault();
-    setSavingKey(true);
-    try {
-      const res = await api.saveLLMSettings({
-        api_key: apiKey,
-        model: model || undefined,
-        base_url: baseUrl || undefined,
-        enable_llm: true,
-      });
-      llm.setData(res);
-      setApiKey("");
-      setShowKey(false);
-      health.refetch();
-      config.refetch();
-      reasoning.refetch();
-      toast.success(
-        res.effective_mode === "ai_assisted"
-          ? "API key saved. AI-assisted reasoning is active."
-          : "API key saved. Select AI-assisted reasoning to use it."
-      );
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to save the API key.");
-    } finally {
-      setSavingKey(false);
-    }
-  };
-
-  const removeKey = async () => {
-    if (
-      !confirm(
-        "Remove the saved OpenAI API key? AI-assisted reasoning will fall back to deterministic mode."
-      )
-    )
-      return;
-    setSavingKey(true);
-    try {
-      const res = await api.clearLLMKey();
-      llm.setData(res);
-      health.refetch();
-      config.refetch();
-      reasoning.refetch();
-      toast.success("Saved API key removed.");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to remove the API key.");
-    } finally {
-      setSavingKey(false);
     }
   };
 
@@ -195,9 +122,8 @@ export default function Settings() {
             )}
             {r && !r.llm_configured && r.reasoning_mode === "ai_assisted" && (
               <p className="mt-2 text-xs text-[var(--color-warning,var(--color-muted))]">
-                Add an OpenAI API key below (or set <code>OPENAI_API_KEY</code> and{" "}
-                <code>ENABLE_LLM=true</code> in the backend environment), then
-                restart the server if you edited the environment.
+                To activate AI assistance, set <code>OPENAI_API_KEY</code> and{" "}
+                <code>ENABLE_LLM=true</code> in the backend environment, then restart the server.
               </p>
             )}
           </div>
@@ -248,93 +174,6 @@ export default function Settings() {
           )}
         </Card>
       </div>
-
-        <Card>
-          <SectionHeader
-            title={
-              <span className="inline-flex items-center gap-2">
-                <KeyRound size={16} /> OpenAI API key (optional)
-              </span>
-            }
-            subtitle="Add a key here to enable AI-assisted reasoning. The key is never shown again after saving and is stored in backend/.env.local."
-          />
-          <div className="space-y-3 text-sm">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Fact label="Status" value={llm.data?.configured ? "Configured" : "Not configured"} />
-              <Fact label="Key" value={llm.data?.configured ? llm.data.key_hint : "—"} />
-              <Fact label="Source" value={llm.data?.source ?? "none"} />
-            </div>
-            <Fact label="Model" value={llm.data?.model ?? "—"} />
-            <Fact label="Base URL" value={llm.data?.base_url ?? "—"} />
-            <Fact label="Saved to" value={llm.data?.storage ?? "backend/.env.local"} />
-            {llm.data?.note && (
-              <p className="text-xs leading-relaxed text-[var(--color-muted)]">{llm.data.note}</p>
-            )}
-          </div>
-
-          <form className="mt-4 space-y-3" onSubmit={saveKey}>
-            <div className="grid gap-3 lg:grid-cols-3">
-              <label className="space-y-1 text-xs text-[var(--color-muted)]">
-                <span>API key</span>
-                <div className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
-                  <input
-                    type={showKey ? "text" : "password"}
-                    value={apiKey}
-                    onChange={(event) => setApiKey(event.target.value)}
-                    placeholder={llm.data?.configured ? "Leave blank to keep existing key" : "sk-..."}
-                    autoComplete="off"
-                    spellCheck={false}
-                    className="w-full bg-transparent text-sm text-[var(--color-ink)] outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey((v) => !v)}
-                    className="text-[var(--color-faint)] hover:text-[var(--color-ink)]"
-                  >
-                    {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                  </button>
-                </div>
-              </label>
-              <label className="space-y-1 text-xs text-[var(--color-muted)]">
-                <span>Model</span>
-                <input
-                  value={model}
-                  onChange={(event) => setModel(event.target.value)}
-                  placeholder="gpt-4o-mini"
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm text-[var(--color-ink)] outline-none"
-                />
-              </label>
-              <label className="space-y-1 text-xs text-[var(--color-muted)]">
-                <span>Base URL (OpenAI-compatible)</span>
-                <input
-                  value={baseUrl}
-                  onChange={(event) => setBaseUrl(event.target.value)}
-                  placeholder="https://api.openai.com/v1"
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm text-[var(--color-ink)] outline-none"
-                />
-              </label>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button type="submit" disabled={savingKey}>
-                <KeyRound size={14} /> {savingKey ? "Saving…" : "Save API key"}
-              </Button>
-              {llm.data?.configured && llm.data?.source === "saved" && (
-                <Button
-                  type="button"
-                  variant="danger"
-                  onClick={removeKey}
-                  disabled={savingKey}
-                >
-                  <Trash2 size={14} /> Remove saved key
-                </Button>
-              )}
-              <span className="text-xs text-[var(--color-faint)]">
-                Keys are never returned by the API. Use environment variables to take
-                precedence.
-              </span>
-            </div>
-          </form>
-        </Card>
 
         <Card>
           <SectionHeader

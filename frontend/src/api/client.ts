@@ -32,8 +32,6 @@ import type {
   InvestigationOut,
   DemoLoadResponse,
   KnowledgeGraph,
-  LLMSettings,
-  LLMSettingsUpdate,
   Page,
   ReevaluationSummary,
   ReportOut,
@@ -112,14 +110,6 @@ export const api = {
       method: "PUT",
       body: JSON.stringify({ mode }),
     }),
-  llmSettings: () => request<LLMSettings>("/settings/llm"),
-  saveLLMSettings: (payload: LLMSettingsUpdate) =>
-    request<LLMSettings>("/settings/llm", {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    }),
-  clearLLMKey: () =>
-    request<LLMSettings>("/settings/llm/key", { method: "DELETE" }),
 
   // Blackboard
   snapshot: (params: { days?: number } = {}) =>

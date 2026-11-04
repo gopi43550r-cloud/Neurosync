@@ -747,28 +747,6 @@ export interface ReasoningSettings {
   note: string;
 }
 
-export interface LLMSettings {
-  configured: boolean;
-  active: boolean;
-  source: "environment" | "saved" | "none" | string;
-  key_hint: string | null;
-  model: string | null;
-  base_url: string | null;
-  provider: string;
-  enable_llm: boolean;
-  reasoning_mode: "deterministic" | "ai_assisted";
-  effective_mode: "deterministic" | "ai_assisted";
-  storage: string;
-  note: string;
-}
-
-export interface LLMSettingsUpdate {
-  api_key?: string;
-  model?: string;
-  base_url?: string;
-  enable_llm?: boolean;
-}
-
 export interface InvestigationEvent {
   id: number;
   event_type: string;

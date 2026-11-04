@@ -61,9 +61,8 @@ explanations — but the system is correct and complete without it.
 The project reached a verified **1.0.0** release state and was then extended with
 a focused upgrade (evidence assessment, richer human review, dashboard analytics,
 claim-level fact verification, source-credibility analysis, a grounded
-investigation chat, an AI evaluation & performance dashboard and in-app API-key
-management). The backend test suite is **284 tests, all passing**, and the
-production frontend build succeeds.
+investigation chat and an AI evaluation & performance dashboard). The backend test
+suite is **264 tests, all passing**, and the production frontend build succeeds.
 
 ---
 
@@ -506,14 +505,8 @@ user preference (a persisted `reasoning_mode` of `deterministic` or
   are never executed.
 - Optional bearer-token gating on every `/api` route (except health); proven by
   an exhaustive unauthenticated-access test.
-- Secrets are environment-driven (`API_TOKEN`, `OPENAI_API_KEY`); `.env`,
-  `.env.local` and databases are git-ignored; a logging filter redacts every
-  configured secret.
-- The optional API key can be added from the Settings page; it is written only to
-  `backend/.env.local` (loaded after `.env`, with real environment variables
-  taking precedence), returned only as a boolean plus a masked hint, validated
-  before persistence, and blocked from anonymous writes on a production instance
-  without `API_TOKEN`.
+- Secrets are environment-driven (`API_TOKEN`, `OPENAI_API_KEY`); `.env` and
+  databases are git-ignored; a logging filter redacts every configured secret.
 - Errors never return stack traces or secrets.
 - Configuration is fully environment-driven (database URL, CORS origins, upload
   limit, environment, upload dir, log level/format, docs toggle, trusted hosts,
@@ -599,7 +592,7 @@ authoritative gate.
 
 ## 22. Testing strategy
 
-- **Backend:** **284 tests** in `app/tests/` covering extraction, conflict
+- **Backend:** **264 tests** in `app/tests/` covering extraction, conflict
   detection, all six agents, the scheduler, orchestration, the blackboard, the
   SSE progress stream, hypothesis ranking, the audit trail, human review,
   multi-factor evidence assessment, dashboard snapshot filters/distributions,
@@ -607,8 +600,7 @@ authoritative gate.
   chat, the evaluation dashboard (seeding, labelled create/upload, real-code runs,
   recomputed metrics, isolated runs, analytics and exports), reports, the
   knowledge graph, the demo scenario, the optional LLM layer (mocked provider),
-  in-app API-key management (masking, validation, persistence and the production
-  guard), security, settings, and the HTTP API.
+  security, settings, and the HTTP API.
 - **Isolation:** tests use a temporary database and temporary uploads; no network
   or API key is required.
 - **Determinism:** a `run_investigation_sync` fixture runs investigations to
@@ -824,7 +816,7 @@ TypeScript, Vite and Tailwind on the frontend; SSE for realtime; pytest for test
 Docker/Caddy for production.
 
 **Q10. How do you know it works?**
-A 284-test automated suite, a green production build, a labelled evaluation
+A 264-test automated suite, a green production build, a labelled evaluation
 harness with reproducible metrics (conflict detection and evidence verification),
 an end-to-end smoke test, and a documented release verification. Nothing is
 asserted without a measurement.
@@ -875,9 +867,8 @@ marked as demonstration data.
 Multi-factor evidence assessment, review decisions `inconclusive`/`reopen`,
 dashboard filters/distributions with deep links, claim-level fact verification,
 source-credibility analysis, a grounded investigation chat, an evaluation &
-performance dashboard with labelled test-set management and CSV/PDF export, in-app
-API-key management for the optional OpenAI-compatible provider, and
-the requested documentation set — all verified (284 tests passing; smoke test
+performance dashboard with labelled test-set management and CSV/PDF export, and
+the requested documentation set — all verified (264 tests passing; smoke test
 green).
 
 **Q20. What would you build next?**

@@ -134,16 +134,8 @@ detected, conclusions reached and human review decisions. Filter by entity type.
 
 ### Settings
 **Reasoning mode** (Deterministic or AI-assisted), engine and provider details,
-the scheduler weights, OpenAI API-key management, and demonstration-data controls
-(load / reset). The app is fully functional without an API key.
-
-#### Adding an OpenAI API key
-
-Open **Settings → OpenAI API key**, paste the key and press **Save API key**. The
-key is stored server-side in `backend/.env.local` (git-ignored) and applied
-immediately; it is never returned to the browser — only a masked hint such as
-`••••cdef` is shown. Use **Remove saved key** to delete it. A key supplied by the
-process environment or `backend/.env` takes precedence after a restart.
+the scheduler weights, and demonstration-data controls (load / reset). The app is
+fully functional without an API key.
 
 #### Choosing a reasoning mode
 
@@ -154,11 +146,11 @@ process environment or `backend/.env` takes precedence after a restart.
 
 If you select AI-assisted but the backend has no provider configured, NeuroSync
 does **not** fail: it keeps running deterministically and tells you so. To make AI
-assistance actually active, add a key under **Settings → OpenAI API key** (or set
-`ENABLE_LLM=true` and `OPENAI_API_KEY` in the backend environment and restart the
-server; see the README). When AI is active, its suggestions are labelled and every
-quote/citation is checked against the documents and evidence — ungrounded output
-is discarded. Toggling modes never changes your documents or existing results.
+assistance actually active, set `ENABLE_LLM=true` and `OPENAI_API_KEY` in the
+backend environment and restart the server (see the README). When AI is active,
+its suggestions are labelled and every quote/citation is checked against the
+documents and evidence — ungrounded output is discarded. Toggling modes never
+changes your documents or existing results.
 
 ---
 

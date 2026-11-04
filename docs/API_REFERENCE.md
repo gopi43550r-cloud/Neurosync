@@ -20,9 +20,6 @@ Errors return `{ "detail": "...", "code": "..." }`.
 | GET    | `/api/config`  | Public configuration: mode, upload limit, weights. |
 | GET    | `/api/settings/reasoning` | Current reasoning-mode preference and effective mode. |
 | PUT    | `/api/settings/reasoning` | Set the reasoning mode (`deterministic` \| `ai_assisted`). |
-| GET    | `/api/settings/llm` | Provider status (never includes the key). |
-| PUT    | `/api/settings/llm` | Save the API key / model / base URL and apply immediately. |
-| DELETE | `/api/settings/llm/key` | Remove the key saved by the app. |
 
 `GET /api/health` includes `reasoning_mode` (the stored preference) and
 `effective_mode` (what is actually running — degrades to `deterministic` when no
@@ -51,56 +48,6 @@ Request body: `{ "mode": "deterministic" | "ai_assisted" }`. The preference is a
 global, persisted setting. Selecting `ai_assisted` without a configured provider
 is accepted but `effective_mode` stays `deterministic` and `note` explains why.
 Per-investigation `enable_llm` is ANDed with the global mode as an opt-out.
-
-### LLM / API-key settings
-
-`GET /api/settings/llm` reports provider state **without ever returning the key**:
-
-```json
-{
-  "configured": true,
-  "active": true,
-  "source": "saved",
-  "key_hint": "••••cdef",
-  "model": "gpt-4o-mini",
-  "base_url": "https://api.openai.com/v1",
-  "provider": "openai",
-  "enable_llm": true,
-  "reasoning_mode": "ai_assisted",
-  "effective_mode": "ai_assisted",
-  "storage": ".env.local",
-  "note": "AI assistance is active; model output is validated against the documents."
-}
-```
-
-`source` is `environment` (process env or `backend/.env`), `saved` (written by
-this endpoint) or `none`. `key_hint` is the last four characters, never the key.
-
-`PUT /api/settings/llm` accepts:
-
-```json
-{
-  "api_key": "sk-...",
-  "model": "gpt-4o-mini",
-  "base_url": "https://api.openai.com/v1",
-  "enable_llm": true
-}
-```
-
-- `api_key` is optional after the first save; omit or send `""` to keep the
-  existing key. On the first configuration a key is required.
-- Values are validated before they reach disk: keys must be 8–512 URL-safe
-  characters, and the base URL must be an `http(s)` URL without embedded
-  credentials, query string or fragment.
-- The key is persisted to `backend/.env.local` (git-ignored, `0600` where the OS
-  supports it) and applied to the running process immediately. Real environment
-  variables still take precedence after a restart.
-- `DELETE /api/settings/llm/key` clears the stored key and disables LLM
-  assistance. A key supplied by the environment returns after a restart.
-
-Writes are **blocked with `403`** when `ENVIRONMENT=production` and `API_TOKEN`
-is empty, since the API would otherwise expose anonymous credential replacement.
-Reads remain available. Errors return `422` with a human-readable `detail`.
 
 ---
 

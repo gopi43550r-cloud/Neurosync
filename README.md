@@ -280,10 +280,7 @@ configuration, HTTPS, access restriction, backups and a verification checklist.
 
 ## Configuration
 
-All configuration is environment-driven (see `backend/.env.example`). The optional
-API key may also be added from **Settings → OpenAI API key**, which writes it to
-`backend/.env.local` (git-ignored, loaded after `.env`). Real environment
-variables always take precedence.
+All configuration is environment-driven (see `backend/.env.example`):
 
 | Variable                   | Default                              | Purpose                                  |
 | -------------------------- | ------------------------------------ | ---------------------------------------- |
@@ -313,9 +310,7 @@ variables always take precedence.
 > `ENABLE_LLM` and a key make AI *available*; the user-ready **reasoning mode**
 > toggle in Settings (`deterministic` / `ai_assisted`, stored in the DB) decides
 > whether it is actually used. If AI is selected without a configured provider,
-> the app reports this and runs deterministically rather than failing. Saving a
-> key from Settings enables `ENABLE_LLM` for the running process and persists it
-> to `backend/.env.local`.
+> the app reports this and runs deterministically rather than failing.
 
 ---
 
@@ -345,12 +340,9 @@ Safety properties, all enforced in code and covered by tests:
   responses are retried and then fall back to deterministic behaviour without
   crashing an investigation.
 - **Keys never leak.** The API key is only sent in the `Authorization` header and
-  is never logged or returned in a response. In-app key management returns only a
-  boolean and a masked hint, and rejects malformed values before writing them.
+  is never logged or returned in a response.
 
-To enable it, either add the key in **Settings → OpenAI API key** (recommended;
-it is stored server-side in `backend/.env.local` and never returned to the
-browser), or set it in `backend/.env`:
+To enable it:
 
 ```powershell
 # backend/.env

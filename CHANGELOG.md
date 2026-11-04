@@ -30,15 +30,6 @@ The version is declared in three places and they must stay in step:
   reported separately; unlabelled demonstration records are never scored
   (`services/evaluation_service.py`, `services/evaluation_export.py`,
   `/api/evaluation/*`, `pages/Evaluation.tsx`).
-- **In-app OpenAI API-key management** — the Settings page can add, update or
-  remove the optional OpenAI-compatible key without editing files. The key is
-  validated, persisted to the git-ignored `backend/.env.local` (loaded after
-  `.env`, with process environment still taking precedence) and applied to the
-  running process immediately. The API never returns the key: only a boolean, a
-  masked hint and non-secret provider settings. Writes are refused on an
-  unauthenticated production instance
-  (`services/llm_settings_service.py`, `/api/settings/llm`,
-  `/api/settings/llm/key`, `pages/Settings.tsx`).
 - **Claim-level fact verification** — claims are verified against the documents,
   claims and evidence already stored, producing `supported`, `contradicted`,
   `partially_supported` or `unverified` with grounded citations (document,
@@ -92,9 +83,9 @@ The version is declared in three places and they must stay in step:
 
 - Added `test_fact_verification.py`, `test_source_credibility.py`,
   `test_evidence_assessment.py`, `test_dashboard_snapshot.py`,
-  `test_chat_assistant.py`, `test_evaluation_dashboard.py`,
-  `test_llm_settings.py` and new review-decision cases in
-  `test_audit_review_ranking.py`. Backend suite: **284 tests passing**.
+  `test_chat_assistant.py`, `test_evaluation_dashboard.py`
+  and new review-decision cases in `test_audit_review_ranking.py`.
+  Backend suite: **264 tests passing**.
 
 ---
 

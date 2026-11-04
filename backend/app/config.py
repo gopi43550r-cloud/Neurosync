@@ -15,10 +15,7 @@ BACKEND_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        # ``.env.local`` is written by the in-app API-key manager (Settings page)
-        # and takes precedence over ``.env``. Both files are git-ignored. Real
-        # process environment variables still take precedence over both.
-        env_file=(str(BACKEND_DIR / ".env"), str(BACKEND_DIR / ".env.local")),
+        env_file=str(BACKEND_DIR / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )

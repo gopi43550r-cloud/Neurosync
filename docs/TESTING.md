@@ -34,7 +34,7 @@ Run a single file or test:
 .\venv\Scripts\python.exe -m pytest app\tests\test_api.py::test_health -q
 ```
 
-The current suite is **284 tests** and completes in roughly four minutes.
+The current suite is **264 tests** and completes in roughly four minutes.
 
 ---
 
@@ -64,7 +64,6 @@ Tests live in `backend/app/tests/`. Each file targets one subsystem:
 | `test_fact_verification.py` | Claim-level fact verification with grounded citations. |
 | `test_source_credibility.py` | Source-credibility analyzer factors and aggregation. |
 | `test_chat_assistant.py` | Grounded investigation chat: scoping, citations and explicit uncertainty. |
-| `test_llm_settings.py` | In-app API-key management: masking, persistence, validation, production guard and immediate activation. |
 | `test_evaluation_dashboard.py` | Evaluation seeding, labelled test-set create/upload, real-code runs, recomputed metrics, dashboard analytics, CSV/PDF exports and validation errors. |
 | `test_llm_service.py` / `test_llm_validation.py` / `test_llm_end_to_end.py` | The optional LLM layer: provider interface, grounding/validation and AI-assisted flows (no live calls). |
 | `test_security.py` | Security regressions (upload/validation/path safety). |
